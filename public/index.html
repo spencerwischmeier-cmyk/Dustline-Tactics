@@ -4921,6 +4921,7 @@ function showStart(){const st0=atMenu?+$('ov').scrollTop||0:0;atMenu=true;const 
 
  h+='<p class="lb">Camera</p>'+viewHtml()+gqHtml()+'<p class="lb">Resource style</p><p class="mpnote" style="margin:-2px 0 8px">Looks only — in multiplayer the host\'s choice applies.</p><div class="row" style="margin-bottom:12px"><button data-u="0" class="'+(PCUR?'':'main')+'">Crystal fields</button><button data-u="1" class="'+(PCUR?'main':'')+'">Bank vaults</button></div>';
  if(mm==='skm')h+='<p class="lb">Your army color</p><div class="sws">'+swatches(PREF,'c')+'</div><div id="skbox">'+skBox()+'</div>';
+ else if(mm==='mp')h+='<p class="lb">Your army color</p><div class="sws">'+swatches(PREF,'c')+'</div>';
  else if(mm!=='mp')h+='<p class="lb">Your army color</p><div class="sws">'+swatches(PREF,'c')+'</div><p class="lb">Choose a difficulty to start</p><div class="row" style="flex-wrap:wrap"><button style="flex:1 1 40%" data-d="0.6">Easy</button><button style="flex:1 1 40%" data-d="0.8">Moderate</button><button style="flex:1 1 40%" class="main" data-d="1">Normal</button><button style="flex:1 1 40%" data-d="1.2">Tough</button><button style="flex:1 1 40%" data-d="1.4">Hard</button><button style="flex:1 1 40%;border-color:#ff5a3c;color:#ffb3a3" data-d="2">War is Hell</button></div>';
  if(mm!=='solo'&&mm!=='sbx'&&mm!=='skm')h+='<p class="lb">'+(mm==='mp'?'Play with another player':'Or play with another player')+'</p><div id="mpbox"></div>';
  h+='</div>';ov.innerHTML=h;renderMP();ov.scrollTop=st0;roloInit();}
