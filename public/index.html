@@ -355,7 +355,7 @@ details.opts p.lb:first-of-type{margin-top:2px}
 .shh{display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:-6px;background:#1d1810;padding:6px 0 10px;z-index:2}
 .shh b{font-size:16px;letter-spacing:.07em;text-transform:uppercase}
 .shx{padding:8px 16px;border-radius:999px;background:#33291a;border:1px solid #6b5631;color:#f3ead8;font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase}.shx.main{background:#ffc247;color:#1b1407;border-color:#ffc247}
-.shf{flex-wrap:nowrap;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}.shf button{flex:0 0 auto}
+.shf{flex-wrap:wrap;margin-bottom:10px}.shf button{flex:1 0 auto;padding:8px 10px}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mtile{text-align:left;border-radius:10px;background:#2a2216;border:2px solid #3d311c;padding:6px;color:#f3ead8}
 .mtile img{width:100%;aspect-ratio:4/3;border-radius:6px;display:block;margin-bottom:5px}
@@ -1076,7 +1076,7 @@ function bld3x(b,h,par,bk){const r=b.r,t=ci(b.team),k=HS()/1.5,hot=b.built&&b.hp
 function soldier3(u,d,t,mv){const ty=u.type,k=(u.r/7)*(ty==='vang'?1.25:1)*1.1,x=u.x,y=u.y,id=u.id||0,hi=GQ>=2,sw=mv?Math.sin(VT*14+id)*2.6*k:0,by=y-(mv?Math.abs(Math.sin(VT*14+id))*1.1*k:MD===1?0:Math.sin(VT*2.4+id)*.3*k),
   ax=Math.cos((u.ta||0)-YAW),ay=Math.sin((u.ta||0)-YAW)*.5,sd=ax>=0?1:-1,rc=G&&u.fT!=null?clamp(1-(G.t-u.fT)/.14,0,1):0,body=ty==='medic'?'#f3ead8':ty==='eng'?'#ffc247':ty==='hacker'?'#1d2b2f':ty==='evac'?CIVC[id%4]:TC[t],
   L=(ty==='lancer'?13:ty==='marks'?17:ty==='gren'?9:11)*k,Wd=(ty==='lancer'?4:ty==='gren'?4.5:ty==='marks'?1.8:2.6)*k,gx=x+ax*(3-rc*1.6)*k,gy=by-11*k+ay*3*k;
- upT(x,y,0);cx.lineCap='round';cx.lineJoin='round';
+ upT(x,y,0);if(SKA)SKBB=new DOMMatrix([1,0,0,1,x,y]).scale(.36/SKR);cx.lineCap='round';cx.lineJoin='round';
  /* arms reach for the weapon; unarmed troops swing them as they walk */
  const arms=()=>{const sh=[[x-3.3*k,by-13.6*k],[x+3.3*k,by-13.6*k]],hd=d.dmg?[[gx+ax*1.5*k,gy+ay*1.5*k],[gx+ax*L*.5,gy+ay*L*.5]]:[[x-4.4*k-sw*.5,by-7.4*k],[x+4.4*k+sw*.5,by-7.4*k]];cx.beginPath();for(let i=0;i<2;i++){cx.moveTo(sh[i][0],sh[i][1]);cx.lineTo(hd[i][0],hd[i][1]);}cx.strokeStyle='#15110b';cx.lineWidth=3.3*k;cx.stroke();cx.strokeStyle=body;cx.lineWidth=1.9*k;cx.stroke();},
   gun=()=>{if(!d.dmg)return;const tx=gx+ax*L,ty2=gy+ay*L;cx.strokeStyle='#15110b';cx.lineWidth=Wd+1.6;cx.beginPath();cx.moveTo(gx,gy);cx.lineTo(tx,ty2);cx.stroke();cx.strokeStyle=ty==='lancer'?'#5a5347':'#2a2318';cx.lineWidth=Wd;cx.stroke();if(ty==='lancer'){cx.fillStyle='#f3ead8';circ(tx,ty2,2.2*k);cx.fill();}
@@ -1113,13 +1113,13 @@ function mEnd(){cx.lineJoin='miter';cx.lineCap='butt';}
 function prism(x,y,an,bl,bw,tl,tw,z0,zr,zf,cs,ct){const c=Math.cos(an),s=Math.sin(an),B=[],T=[],F=[];
  for(let i=0;i<4;i++){const qx=i===1||i===2?1:-1,qy=i>1?1:-1,bx=qx*bl,by=qy*bw,tx=qx*tl,ty=qy*tw;B.push(PP(x+bx*c-by*s,y+bx*s+by*c,z0));T.push(PP(x+tx*c-ty*s,y+tx*s+ty*c,qx>0?zf:zr));}
  for(let i=0;i<4;i++){const j=(i+1)&3,a=B[i],b=B[j],d=T[j],e=T[i];if((a[0]*b[1]-b[0]*a[1])+(b[0]*d[1]-d[0]*b[1])+(d[0]*e[1]-e[0]*d[1])+(e[0]*a[1]-a[0]*e[1])<=0)continue;
-  const nx=i===1?1:i===3?-1:0,ny=i===0?-1:i===2?1:0;cx.fillStyle=shc(cs,.5+.5*((nx*c-ny*s)*LX+(nx*s+ny*c)*LY));cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.lineTo(d[0],d[1]);cx.lineTo(e[0],e[1]);cx.closePath();cx.fill();F.push(a,b,d,e);}
- if(ct&&tl>.05&&tw>.05){cx.fillStyle=ct;cx.beginPath();cx.moveTo(T[0][0],T[0][1]);cx.lineTo(T[1][0],T[1][1]);cx.lineTo(T[2][0],T[2][1]);cx.lineTo(T[3][0],T[3][1]);cx.closePath();cx.fill();F.push(T[0],T[1],T[2],T[3]);}
+  const nx=i===1?1:i===3?-1:0,ny=i===0?-1:i===2?1:0;cx.fillStyle=shc(cs,.5+.5*((nx*c-ny*s)*LX+(nx*s+ny*c)*LY));if(SKA&&typeof cs!=='string')SKFM=skPrismSide(x,y,an,bl,bw,tl,tw,z0,zr,zf,i,a,b,e);cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.lineTo(d[0],d[1]);cx.lineTo(e[0],e[1]);cx.closePath();cx.fill();SKFM=null;F.push(a,b,d,e);}
+ if(ct&&tl>.05&&tw>.05){cx.fillStyle=ct;if(SKA&&typeof ct!=='string')SKFM=skPrismTop(x,y,an,tl,tw,T);cx.beginPath();cx.moveTo(T[0][0],T[0][1]);cx.lineTo(T[1][0],T[1][1]);cx.lineTo(T[2][0],T[2][1]);cx.lineTo(T[3][0],T[3][1]);cx.closePath();cx.fill();SKFM=null;F.push(T[0],T[1],T[2],T[3]);}
  if(F.length){cx.beginPath();for(let i=0;i<F.length;i+=4){cx.moveTo(F[i][0],F[i][1]);cx.lineTo(F[i+1][0],F[i+1][1]);cx.lineTo(F[i+2][0],F[i+2][1]);cx.lineTo(F[i+3][0],F[i+3][1]);cx.closePath();}cx.stroke();}return T;}
 function tube3(x0,y0,z0,x1,y1,z1,w,col){const a=PP(x0,y0,z0),b=PP(x1,y1,z1);cx.lineCap='round';cx.lineWidth=(w+1.5)*MLW;cx.strokeStyle='#15110b';cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.stroke();cx.lineWidth=w*MLW;cx.strokeStyle=col;cx.stroke();cx.lineCap='butt';cx.strokeStyle='#15110b';cx.lineWidth=1.2*MLW;return b;}
-function ball3(x,y,z,r,col,glow){const p=PP(x,y,z),R=r*p[2];if(glow){cx.fillStyle=glow;cx.beginPath();cx.arc(p[0],p[1],R*2.6,0,6.3);cx.fill();}cx.fillStyle=col;cx.beginPath();cx.arc(p[0],p[1],R,0,6.3);cx.fill();cx.stroke();if(R>2.2){cx.fillStyle='rgba(255,255,255,.4)';cx.beginPath();cx.arc(p[0]-R*.3,p[1]-R*.3,R*.34,0,6.3);cx.fill();}return p;}
-function disc3(x,y,z,r,fill,line){const p=PP(x,y,z);cx.beginPath();cx.ellipse(p[0],p[1],r*p[2],r*p[2]*SB3,0,0,6.3);if(fill){cx.fillStyle=fill;cx.fill();}if(line!==0)cx.stroke();return p;}
-function poly3(pts,fill,line){cx.beginPath();for(const q of pts){const p=PP(q[0],q[1],q[2]);cx.lineTo(p[0],p[1]);}cx.closePath();if(fill){cx.fillStyle=fill;cx.fill();}if(line!==0)cx.stroke();}
+function ball3(x,y,z,r,col,glow){const p=PP(x,y,z),R=r*p[2];if(glow){cx.fillStyle=glow;cx.beginPath();cx.arc(p[0],p[1],R*2.6,0,6.3);cx.fill();}cx.fillStyle=col;if(SKA&&typeof col!=='string')SKFM=new DOMMatrix([p[2],0,0,p[2],p[0],p[1]]).scale(.36/SKR);cx.beginPath();cx.arc(p[0],p[1],R,0,6.3);cx.fill();SKFM=null;cx.stroke();if(R>2.2){cx.fillStyle='rgba(255,255,255,.4)';cx.beginPath();cx.arc(p[0]-R*.3,p[1]-R*.3,R*.34,0,6.3);cx.fill();}return p;}
+function disc3(x,y,z,r,fill,line){const p=PP(x,y,z);cx.beginPath();cx.ellipse(p[0],p[1],r*p[2],r*p[2]*SB3,0,0,6.3);if(fill){cx.fillStyle=fill;if(SKA&&typeof fill!=='string')SKFM=skFlat(x,y,z);cx.fill();SKFM=null;}if(line!==0)cx.stroke();return p;}
+function poly3(pts,fill,line){cx.beginPath();for(const q of pts){const p=PP(q[0],q[1],q[2]);cx.lineTo(p[0],p[1]);}cx.closePath();if(fill){cx.fillStyle=fill;if(SKA&&typeof fill!=='string')SKFM=skPoly3(pts);cx.fill();SKFM=null;}if(line!==0)cx.stroke();}
 function line3(pts,col,w){cx.beginPath();for(const q of pts){const p=PP(q[0],q[1],q[2]);cx.lineTo(p[0],p[1]);}cx.lineCap='round';cx.strokeStyle=col;cx.lineWidth=w*MLW;cx.stroke();cx.lineCap='butt';cx.strokeStyle='#15110b';cx.lineWidth=1.2*MLW;}
 /* an ellipse lying in any plane: centre c with two half-axes given as 3D offsets */
 function ell3(c,e1,e2,fill,line){const p=PP(c[0],c[1],c[2]),a=PP(c[0]+e1[0],c[1]+e1[1],c[2]+e1[2]),b=PP(c[0]+e2[0],c[1]+e2[1],c[2]+e2[2]),ux=a[0]-p[0],uy=a[1]-p[1],vx=b[0]-p[0],vy=b[1]-p[1],th=.5*Math.atan2(2*(ux*vx+uy*vy),ux*ux+uy*uy-vx*vx-vy*vy),ct=Math.cos(th),st=Math.sin(th),ax=ux*ct+vx*st,ay=uy*ct+vy*st,bx=vx*ct-ux*st,by=vy*ct-uy*st;
@@ -1250,8 +1250,8 @@ function shipTop(u,d,t,r,moving){const S=SHP[u.type]||SHP.cutter,O=shipOutline(r
  for(const q of S.tur||[]){cx.save();cx.translate(q[0]*r,0);cx.rotate(q[0]<0&&Math.abs(ta)<.01?Math.PI:ta);cx.fillStyle='#2a2318';const n=q[3],w=n>2?1.6:2;for(let i=0;i<n;i++)cx.fillRect(0,(i-(n-1)/2)*(w+1.7)-w/2,(q[1]+q[2])*r,w);cx.fillStyle=TC[t];circ(0,0,q[1]*r);cx.fill();cx.stroke();cx.restore();}}
 /* the full model for the 3D view. Ships ride in the water, which lies a little below the land. */
 function hullP(P,z0,z1,cs,ct,ox,oy){const n=P.length,B=P.map(q=>PP(q[0],q[1],z0)),T=P.map(q=>PP(q[0],q[1],z1));
- for(let i=0;i<n;i++){const j=(i+1)%n,a=P[i],b=P[j],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;let nx=b[1]-a[1],ny=a[0]-b[0];if(nx*(mx-ox)+ny*(my-oy)<0){nx=-nx;ny=-ny;}if(!facing(nx,ny,mx,my))continue;const l=Math.hypot(nx,ny)||1;cx.fillStyle=shc(cs,.5+.5*(nx*LX+ny*LY)/l);cx.beginPath();cx.moveTo(B[i][0],B[i][1]);cx.lineTo(B[j][0],B[j][1]);cx.lineTo(T[j][0],T[j][1]);cx.lineTo(T[i][0],T[i][1]);cx.closePath();cx.fill();cx.stroke();}
- cx.fillStyle=ct;cx.beginPath();for(const q of T)cx.lineTo(q[0],q[1]);cx.closePath();cx.fill();cx.stroke();}
+ for(let i=0;i<n;i++){const j=(i+1)%n,a=P[i],b=P[j],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;let nx=b[1]-a[1],ny=a[0]-b[0];if(nx*(mx-ox)+ny*(my-oy)<0){nx=-nx;ny=-ny;}if(!facing(nx,ny,mx,my))continue;const l=Math.hypot(nx,ny)||1;cx.fillStyle=shc(cs,.5+.5*(nx*LX+ny*LY)/l);if(SKA&&typeof cs!=='string')SKFM=skFace3([a[0],a[1],z0],[b[0],b[1],z0],[a[0],a[1],z1],B[i],B[j],T[i]);cx.beginPath();cx.moveTo(B[i][0],B[i][1]);cx.lineTo(B[j][0],B[j][1]);cx.lineTo(T[j][0],T[j][1]);cx.lineTo(T[i][0],T[i][1]);cx.closePath();cx.fill();SKFM=null;cx.stroke();}
+ cx.fillStyle=ct;if(SKA&&typeof ct!=='string'&&n>2)SKFM=skFace3([P[0][0],P[0][1],z1],[P[1][0],P[1][1],z1],[P[2][0],P[2][1],z1],T[0],T[1],T[2]);cx.beginPath();for(const q of T)cx.lineTo(q[0],q[1]);cx.closePath();cx.fill();SKFM=null;cx.stroke();}
 /* the Rookery in the 3D view: the hull, the deck slab that overhangs it, what is painted on the deck, then the island. W turns a point of the ship's own frame into a point on the map. */
 function cv3(u,t,r,S,W,zw,hi,id){const K=CVD,a=u.a||0,D=TD[t],C=TC[t],zd=zw+22,zh=zd-3.2,LL=K.LL,hw=K.hw,ix=K.is[0],iy=K.is[1],ink='#15110b',
   Pd=(x,y)=>{const o=W(x*r,y*r);return PP(o[0],o[1],zd);},pt=(q,w)=>Pd(K.a[0]+K.c*q-K.s*w,K.a[1]+K.s*q+K.c*w),
@@ -1418,7 +1418,7 @@ function bgear(b,h,t,k){const ty=b.type,r=b.r,x=b.x,y=b.y,D=TD[t],C=TC[t],Lc=TL[
  else if(ty==='gov')dish3(x+.5*r,y+.45*r,h+8*k+r*.3,r*.26,VT*.6+id,'#f3ead8');
  else if(ty==='station')ring3(x,y,h+16*k+3,r*.5,VT*.7,.4,'#7df0ff',1.3);
  mEnd();}
-function isoUnit(u,sel){skinOn(u.team);try{isoUnit0(u,sel);}finally{skinOff();}}
+function isoUnit(u,sel){skinOn(u.team,u);try{isoUnit0(u,sel);}finally{skinOff();}}
 function isoUnit0(u,sel){const d=UD[u.type],r=u.r,al=u.alt==null?1:Math.min(1,u.alt),h=(u.air?Math.max(5,44*(u.alt==null?1:u.alt)):d.veh?(V3?7+Math.min(5,r*.25):d.sea&&r>30?10:7):(V3?11:8))*HS(),t=ci(u.team);AX=u.x;AY=u.y;
  if(JRT[u.type]!=null&&!ICM){if(SHM===1)return;cx.save();sT();jrUnitDraw(u);cx.restore();NOART=true;gT(0);{const P=PP(u.x,u.y,135*JRK);BAT={x:P[0],y:P[1]-7*P[2],k:P[2]};}try{drawUnit(u,sel);}finally{NOART=false;BAT=null;}return;}
  if(u.type==='weaver'){if(SHM===1)return;cx.save();sT();wvUnitDraw(u);cx.restore();NOART=true;gT(0);{const P=PP(u.x,u.y,(u._bz||110)+120);BAT={x:P[0],y:P[1]-7*P[2],k:P[2]};}try{drawUnit(u,sel);}finally{NOART=false;BAT=null;}return;}
@@ -4461,7 +4461,7 @@ const SKINS=[
  {n:'Parade Gold',d:'Ceremonial gold trim over your color'}];
 let PSKIN=0;try{const v=+localStorage.getItem('dl_skin');if(v>=0&&v<SKINS.length)PSKIN=v|0;}catch(e){}
 const TC0=TC.slice(),TD0=TD.slice(),TL0=TL.slice();
-const SKR=4,SKT=32,SKMAT=new Map(),SKP=new Map();
+const SKR=4,SKT=32,SKMAT=new Map(),SKPT=new Map();
 const skHex=n=>{n=String(n);return [parseInt(n.slice(1,3),16),parseInt(n.slice(3,5),16),parseInt(n.slice(5,7),16)];};
 const skStr=a=>'#'+a.map(v=>('0'+Math.round(clamp(v,0,255)).toString(16)).slice(-2)).join('');
 const skMix=(a,b,t)=>{const A=skHex(a),B=skHex(b);return skStr(A.map((v,i)=>v+(B[i]-v)*t));};
@@ -4470,45 +4470,88 @@ function skRnd(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return ()=>(s=s
 /* a blob that wraps around the tile edges so the pattern repeats without seams */
 function skBlob(g,S,x,y,rx,ry,rot,col,R){g.fillStyle=col;for(const ox of [-S,0,S])for(const oy of [-S,0,S]){g.beginPath();const n=9;for(let i=0;i<=n;i++){const a=i/n*6.283,w=.72+R()*.5,px=x+ox+Math.cos(a+rot)*rx*w,py=y+oy+Math.sin(a+rot)*ry*w;i?g.lineTo(px,py):g.moveTo(px,py);}g.closePath();g.fill();}}
 function skTile(k,ci,role,ph){const S=SKT*SKR,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d'),C=TC0[ci],R=skRnd(1000+k*97+ci*13+(role==='d'?5:0)),gold=ci===6;
- if(k===1){g.fillStyle='#c9a66b';g.fillRect(0,0,S,S);for(let i=0;i<7;i++)skBlob(g,S,R()*S,R()*S,14+R()*14,9+R()*10,R()*6,'#8a6a3e',R);for(let i=0;i<5;i++)skBlob(g,S,R()*S,R()*S,10+R()*10,7+R()*7,R()*6,'#5b4630',R);for(let i=0;i<4;i++)skBlob(g,S,R()*S,R()*S,9+R()*9,6+R()*7,R()*6,skMul(C,.78),R);}
- else if(k===2){const P=['#9aa0a6','#7c8288','#5e646a','#454a50'],n=8,q=S/n;for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=R();g.fillStyle=r<.14?C:r<.2?skMul(C,.7):P[Math.floor(R()*4)];g.fillRect(x*q,y*q,q+.5,q+.5);}}
+ if(k===1){g.fillStyle='#c9a66b';g.fillRect(0,0,S,S);for(let i=0;i<7;i++)skBlob(g,S,R()*S,R()*S,14+R()*14,9+R()*10,R()*6,'#8a6a3e',R);for(let i=0;i<5;i++)skBlob(g,S,R()*S,R()*S,10+R()*10,7+R()*7,R()*6,'#5b4630',R);for(let i=0;i<6;i++)skBlob(g,S,R()*S,R()*S,11+R()*11,8+R()*8,R()*6,i%2?C:skMul(C,.75),R);}
+ else if(k===2){const P=['#9aa0a6','#7c8288','#5e646a','#454a50'],n=8,q=S/n;for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=R();g.fillStyle=r<.18?C:r<.28?skMul(C,.7):P[Math.floor(R()*4)];g.fillRect(x*q,y*q,q+.5,q+.5);}}
  else if(k===3){g.fillStyle=C;g.fillRect(0,0,S,S);g.strokeStyle='rgba(16,12,8,.92)';g.lineCap='round';for(let i=0;i<4;i++){const y0=(i+.15)*S/4+R()*8,w=6+R()*9;g.lineWidth=w;for(const oy of [-S,0,S]){g.beginPath();g.moveTo(-10,y0+oy+R()*10);g.bezierCurveTo(S*.3,y0+oy-14+R()*8,S*.6,y0+oy+16-R()*8,S+10,y0+oy+R()*10);g.stroke();}}}
- else if(k===4){const t=skMix('#c9ced6',C,.3),hi=skMix(t,'#ffffff',.6),lo=skMix(t,'#2e333a',.45);const gr=g.createLinearGradient(0,0,S,S);for(let i=0;i<=4;i++){gr.addColorStop(i/4,i%2?lo:hi);}g.fillStyle=gr;g.fillRect(0,0,S,S);g.fillStyle='rgba(255,255,255,.5)';for(const o of [-S,0,S]){g.beginPath();g.moveTo(o+S*.1,0);g.lineTo(o+S*.22,0);g.lineTo(o+S*.22-S,S);g.lineTo(o+S*.1-S,S);g.closePath();g.fill();}}
+ else if(k===4){const t=skMix('#c9ced6',C,.45),hi=skMix(t,'#ffffff',.6),lo=skMix(t,'#2e333a',.45);const gr=g.createLinearGradient(0,0,S,S);for(let i=0;i<=4;i++){gr.addColorStop(i/4,i%2?lo:hi);}g.fillStyle=gr;g.fillRect(0,0,S,S);g.fillStyle='rgba(255,255,255,.5)';for(const o of [-S,0,S]){g.beginPath();g.moveTo(o+S*.1,0);g.lineTo(o+S*.22,0);g.lineTo(o+S*.22-S,S);g.lineTo(o+S*.1-S,S);g.closePath();g.fill();}g.fillStyle=C;g.fillRect(0,S*.44,S,S*.16);g.fillStyle='rgba(255,255,255,.35)';g.fillRect(0,S*.44,S,S*.03);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(0,S*.57,S,S*.03);}
  else if(k===5){g.fillStyle=skMix(C,'#6b5a45',.45);g.fillRect(0,0,S,S);const P=['#7a4a2e',C,'#6f7880','#8d8064',skMul(C,.7)];for(let i=0;i<9;i++){const w=24+R()*44,h=18+R()*36,x=R()*S,y=R()*S,col=P[i%P.length];for(const ox of [-S,0,S])for(const oy of [-S,0,S]){g.fillStyle=col;g.fillRect(x+ox,y+oy,w,h);g.strokeStyle='rgba(20,15,10,.55)';g.lineWidth=2.5;g.strokeRect(x+ox,y+oy,w,h);g.fillStyle='#2a2218';for(const [a,b] of [[4,4],[w-4,4],[4,h-4],[w-4,h-4]]){g.beginPath();g.arc(x+ox+a,y+oy+b,2.2,0,6.3);g.fill();}}}
   for(let i=0;i<10;i++)skBlob(g,S,R()*S,R()*S,3+R()*7,2+R()*5,R()*6,'rgba(150,80,35,.75)',R);}
  else if(k===6){g.fillStyle='#14161c';g.fillRect(0,0,S,S);const I=ph==null?1:ph;g.strokeStyle=skMix('#14161c',C,.35+.65*I);g.lineWidth=3;g.lineJoin='round';g.shadowColor=C;g.shadowBlur=6+10*I;
   const lines=[[[0,20],[40,20],[52,32],[52,70],[90,70],[100,60],[128,60]],[[20,128],[20,100],[34,86],[76,86],[76,128]],[[100,0],[100,30],[118,48],[128,48]],[[0,104],[8,104],[8,80]],[[64,0],[64,12],[84,32],[84,44]]];
   for(const L of lines){g.beginPath();L.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();}
   g.fillStyle=skMix('#ffffff',C,.4);for(const p of [[52,32],[90,70],[34,86],[118,48],[8,80],[84,44]]){g.beginPath();g.arc(p[0],p[1],4.5,0,6.3);g.fill();}g.shadowBlur=0;}
- else if(k===7){g.fillStyle='#eef2f5';g.fillRect(0,0,S,S);for(let i=0;i<6;i++)skBlob(g,S,R()*S,R()*S,12+R()*12,8+R()*9,R()*6,'#c9d2da',R);for(let i=0;i<4;i++)skBlob(g,S,R()*S,R()*S,8+R()*9,6+R()*6,R()*6,'#a3b0bc',R);for(let i=0;i<3;i++)skBlob(g,S,R()*S,R()*S,8+R()*8,6+R()*6,R()*6,skMix(C,'#ffffff',.55),R);}
+ else if(k===7){g.fillStyle='#eef2f5';g.fillRect(0,0,S,S);for(let i=0;i<6;i++)skBlob(g,S,R()*S,R()*S,12+R()*12,8+R()*9,R()*6,'#c9d2da',R);for(let i=0;i<4;i++)skBlob(g,S,R()*S,R()*S,8+R()*9,6+R()*6,R()*6,'#a3b0bc',R);for(let i=0;i<5;i++)skBlob(g,S,R()*S,R()*S,9+R()*9,6+R()*7,R()*6,i%2?C:skMix(C,'#ffffff',.45),R);}
+ else if(k===8&&role==='c'){g.fillStyle=C;g.fillRect(0,0,S,S);const a=gold?'#f3ead8':'#ffc21a',w=S/16;for(const y0 of [S*.18,S*.68]){for(let i=-2;i<18;i++){g.fillStyle=i%2?a:'#15110b';g.beginPath();g.moveTo(i*w,y0);g.lineTo(i*w+w,y0);g.lineTo(i*w+w-14,y0+14);g.lineTo(i*w-14,y0+14);g.closePath();g.fill();}}g.fillStyle='rgba(0,0,0,.18)';g.fillRect(0,S*.18+14,S,2);g.fillRect(0,S*.68+14,S,2);}
  else if(k===8){const a=gold?'#f3ead8':'#ffc21a',b='#15110b';g.fillStyle=b;g.fillRect(0,0,S,S);g.fillStyle=a;const w=S/4;for(let i=-4;i<8;i++){g.beginPath();g.moveTo(i*w*2,0);g.lineTo(i*w*2+w,0);g.lineTo(i*w*2+w-S,S);g.lineTo(i*w*2-S,S);g.closePath();g.fill();}}
+ else if(k===9&&role==='c'){g.fillStyle=C;g.fillRect(0,0,S,S);const A=gold?'#e6ebf0':'#ffd770',B=gold?'#6b737c':'#8a6410';g.lineWidth=3;for(const y0 of [S*.25,S*.75]){g.strokeStyle=B;g.beginPath();g.moveTo(0,y0+1.5);g.lineTo(S,y0+1.5);g.stroke();g.strokeStyle=A;g.beginPath();g.moveTo(0,y0);g.lineTo(S,y0);g.stroke();}g.fillStyle=A;for(const [x,y] of [[S*.25,S*.5],[S*.75,0],[S*.75,S]]){g.beginPath();g.moveTo(x,y-7);g.lineTo(x+5,y);g.lineTo(x,y+7);g.lineTo(x-5,y);g.closePath();g.fill();}}
  else if(k===9){const A=gold?['#6b737c','#e6ebf0','#9aa3ad']:['#8a6410','#ffd770','#b8860b'];const gr=g.createLinearGradient(0,0,S,S);[0,.25,.5,.75,1].forEach((t,i)=>gr.addColorStop(t,A[i%3]));g.fillStyle=gr;g.fillRect(0,0,S,S);g.fillStyle='rgba(255,255,255,.35)';for(let i=0;i<6;i++){g.beginPath();g.arc(R()*S,R()*S,1.6,0,6.3);g.fill();}}
  return c;}
-function skPat(tile,base){const p=cx.createPattern(tile,'repeat');try{p.setTransform(new DOMMatrix([1/SKR,0,0,1/SKR,0,0]));}catch(e){}SKP.set(p,{tile,base,v:new Map()});return p;}
+function skPat(tile,base){const p=cx.createPattern(tile,'repeat');try{p.setTransform(new DOMMatrix([1/SKR,0,0,1/SKR,0,0]));}catch(e){}SKPT.set(p,{tile,base,v:new Map()});return p;}
 /* a lighter or darker copy of a skin texture, for the shaded sides of 3D shapes */
-function skShade(p,m){const o=SKP.get(p);if(!o)return '#808080';const q=Math.round(clamp(m,0,2)*20)/20;if(q===1)return p;let v=o.v.get(q);if(v)return v;
+function skShade(p,m){const o=SKPT.get(p);if(!o)return '#808080';const q=Math.round(clamp(m,0,2)*20)/20;if(q===1)return p;let v=o.v.get(q);if(v)return v;
  const S=o.tile.width,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');g.drawImage(o.tile,0,0);
  if(q<1){g.globalCompositeOperation='multiply';const k=Math.round(q*255);g.fillStyle='rgb('+k+','+k+','+k+')';}else{g.globalCompositeOperation='screen';const k=Math.round((q-1)*255);g.fillStyle='rgb('+k+','+k+','+k+')';}g.fillRect(0,0,S,S);
- v=cx.createPattern(c,'repeat');try{v.setTransform(new DOMMatrix([1/SKR,0,0,1/SKR,0,0]));}catch(e){}SKP.set(v,{tile:c,base:skMul(o.base,q),v:o.v});o.v.set(q,v);return v;}
-const skBase=p=>{const o=SKP.get(p);return o?o.base:'#808080';};
+ v=cx.createPattern(c,'repeat');try{v.setTransform(new DOMMatrix([1/SKR,0,0,1/SKR,0,0]));}catch(e){}SKPT.set(v,{tile:c,base:skMul(o.base,q),v:o.v});o.v.set(q,v);return v;}
+const skBase=p=>{const o=SKPT.get(p);return o?o.base:'#808080';};
 function skinMat(k,ci){const key=k+'_'+ci;let m=SKMAT.get(key);if(m)return m;const C=TC0[ci],D=TD0[ci],L=TL0[ci],gold=ci===6;
  const body=()=>skPat(skTile(k,ci,'c'),k===4?skMix('#c9ced6',C,.3):k===1?'#a88758':k===2?'#7c8288':k===3?C:k===5?skMix(C,'#6b5a45',.45):k===6?'#14161c':'#dde3e8');
- if(k===1){m={c:body(),d:skMul(C,.72),l:C};}
- else if(k===2){m={c:body(),d:skMul(C,.66),l:C};}
+ if(k===1){const b=body();m={c:b,d:skShade(b,.62),l:C};}
+ else if(k===2){const b=body();m={c:b,d:skShade(b,.6),l:C};}
  else if(k===3){const b=body();m={c:b,d:skShade(b,.55),l:L};}
- else if(k===4){m={c:body(),d:skMix(skMul(C,.75),'#4a5058',.3),l:C};}
- else if(k===5){m={c:body(),d:skMul(C,.6),l:C};}
- else if(k===6){const fr=[0,.33,.66,1].map(ph=>skPat(skTile(6,ci,'c',ph),'#14161c'));m={fr,c:fr[3],d:'#0b0c10',l:L,neon:1};}
- else if(k===7){m={c:body(),d:skMul(C,.85),l:C};}
- else if(k===8){m={c:C,d:skPat(skTile(8,ci,'d'),gold?'#888':'#8a6a10'),l:L};}
- else if(k===9){m={c:C,d:skPat(skTile(9,ci,'d'),gold?'#9aa3ad':'#c9a227'),l:gold?'#eef2f5':'#ffe08a'};}
+ else if(k===4){const b=body();m={c:b,d:skShade(b,.62),l:C};}
+ else if(k===5){const b=body();m={c:b,d:skShade(b,.6),l:C};}
+ else if(k===6){const fr=[0,.33,.66,1].map(ph=>skPat(skTile(6,ci,'c',ph),'#14161c'));m={fr,dfr:fr.map(f=>skShade(f,.6)),c:fr[3],d:skShade(fr[3],.6),l:L,neon:1};}
+ else if(k===7){const b=body();m={c:b,d:skShade(b,.72),l:C};}
+ else if(k===8){m={c:skPat(skTile(8,ci,'c'),C),d:skPat(skTile(8,ci,'d'),gold?'#888':'#8a6a10'),l:L};}
+ else if(k===9){m={c:skPat(skTile(9,ci,'c'),C),d:skPat(skTile(9,ci,'d'),gold?'#9aa3ad':'#c9a227'),l:gold?'#eef2f5':'#ffe08a'};}
  SKMAT.set(key,m);return m;}
 /* while one team's units are drawn, its colors point at the skin */
 let SKD=0,SKS=null,SKF=null;
-function skinOn(team){if(SKD++>0)return;let k,t;if(SKF){k=SKF[0];t=SKF[1];}else{if(!G||!G.skin)return;k=G.skin[team]|0;t=G.col&&G.col[team];}if(!k||k>=SKINS.length||t==null||!TC0[t])return;let m;try{m=skinMat(k,t);}catch(e){return;}
- SKS=[t,TC[t],TD[t],TL[t]];TC[t]=m.c;TD[t]=m.d;TL[t]=m.l;
- if(m.neon){const ph=.5+.5*Math.sin(VT*3.2+(team|0)*1.7);TC[t]=m.fr[Math.min(3,Math.floor(ph*4))];TL[t]=skMix(TC0[t],'#ffffff',.25+.45*ph);}}
-function skinOff(){if(--SKD>0)return;SKD=0;if(SKS){const [t,a,b,c]=SKS;TC[t]=a;TD[t]=b;TL[t]=c;SKS=null;}}
+let SKU=null;
+function skinOn(team,u){SKU=u||null;if(SKD++>0)return;let k,t;if(SKF){k=SKF[0];t=SKF[1];}else{if(!G||!G.skin)return;k=G.skin[team]|0;t=G.col&&G.col[team];}if(!k||k>=SKINS.length||t==null||!TC0[t])return;let m;try{m=skinMat(k,t);}catch(e){return;}
+ SKS=[t,TC[t],TD[t],TL[t]];TC[t]=m.c;TD[t]=m.d;TL[t]=m.l;SKA=skAnchor(SKU);if(SKA)skHook();
+ if(m.neon){const ph=.5+.5*Math.sin(VT*3.2+(team|0)*1.7);const fi=Math.min(3,Math.floor(ph*4));TC[t]=m.fr[fi];TD[t]=m.dfr[fi];TL[t]=skMix(TC0[t],'#ffffff',.25+.45*ph);}}
+/* Keep the paint stuck to the unit. A texture is laid out in whatever coordinates the shape is drawn in: the unit's own frame in the
+   top-down view, but the world or the screen in 2.5D and 3D, which made the camo slide as the unit drove or the camera turned.
+   So for the unit being drawn we work out once where its own frame lands on the screen (its spot on the ground, its heading, the
+   current camera), and right before each fill that uses a skin texture the texture is re-aimed to that frame. */
+let SKA=null,SKH=null,SKFM=null,SKBB=null;
+/* exact placement for the flat faces of 3D shapes: a top at height z, or a wall from a to b between z0 and z1, in drawing coordinates */
+function skTop(z){const u=SKU;if(!u)return null;const c=Math.cos(u.a||0),s=Math.sin(u.a||0),O=pq(u.x,u.y,z),X=pq(u.x+c,u.y+s,z),Y=pq(u.x-s,u.y+c,z);return new DOMMatrix([X[0]-O[0],X[1]-O[1],Y[0]-O[0],Y[1]-O[1],O[0],O[1]]).scale(.36/SKR);}
+function skSide(a,b,z0,z1,A,B,D){const u=SKU;if(!u)return null;const L=Math.hypot(b[0]-a[0],b[1]-a[1])||1,dz=(z1-z0)||1,c=Math.cos(u.a||0),s=Math.sin(u.a||0),ax=a[0]-u.x,ay=a[1]-u.y,lx=ax*c+ay*s,ly=-ax*s+ay*c,dx=((b[0]-a[0])*c+(b[1]-a[1])*s)/L,dy=(-(b[0]-a[0])*s+(b[1]-a[1])*c)/L,u0=lx*dx+ly*dy+(lx*dy-ly*dx)*.37;
+ return new DOMMatrix([(B[0]-A[0])/L,(B[1]-A[1])/L,(D[0]-A[0])/dz,(D[1]-A[1])/dz,A[0],A[1]]).translate(-u0,-z0).scale(.36/SKR);}
+function skAnchor(u){try{if(!G||SKF||ICM||!u||u.x==null)return null;const h=u.air?Math.max(5,44*(u.alt==null?1:Math.min(1,u.alt))):6;let a,b,c,d,e,f;
+  if(V3){const p=PP(u.x,u.y,h),q=PP(u.x+1,u.y,h),r=PP(u.x,u.y+1,h);a=DPR*(q[0]-p[0]);b=DPR*(q[1]-p[1]);c=DPR*(r[0]-p[0]);d=DPR*(r[1]-p[1]);e=DPR*p[0]+TS.sx;f=DPR*p[1]+TS.sy;}
+  else if(ISO){const k=TS.s*IK;a=k;b=k*.5;c=-k;d=k*.5;e=TS.ex+a*u.x+c*u.y;f=TS.ey-h*TS.s+b*u.x+d*u.y;}
+  else{const k=TS.s;a=k;b=0;c=0;d=k;e=TS.ex+k*u.x;f=TS.ey+k*u.y;}
+  const an=u.a||0,co=Math.cos(an),si=Math.sin(an);return new DOMMatrix([a,b,c,d,e,f]).multiply(new DOMMatrix([co,si,-si,co,0,0])).scale(.36/SKR);}catch(e){return null;}}
+function skAff(p0,p1,p2,q0,q1,q2){const ux=p1[0]-p0[0],uy=p1[1]-p0[1],vx=p2[0]-p0[0],vy=p2[1]-p0[1],det=ux*vy-uy*vx;if(Math.abs(det)<1e-9)return null;
+ const sx=q1[0]-q0[0],sy=q1[1]-q0[1],tx=q2[0]-q0[0],ty=q2[1]-q0[1],a=(sx*vy-tx*uy)/det,c=(tx*ux-sx*vx)/det,b=(sy*vy-ty*uy)/det,d=(ty*ux-sy*vx)/det;
+ return new DOMMatrix([a,b,c,d,q0[0]-a*p0[0]-c*p0[1],q0[1]-b*p0[0]-d*p0[1]]).scale(.36/SKR);}
+function skLoc(wx,wy){const u=SKU,c=Math.cos(u.a||0),s=Math.sin(u.a||0),dx=wx-u.x,dy=wy-u.y;return [dx*c+dy*s,-dx*s+dy*c];}
+function skPrismW(x,y,an,l,w,i){const c=Math.cos(an),s=Math.sin(an),qx=i===1||i===2?1:-1,qy=i>1?1:-1,bx=qx*l,by=qy*w;return [x+bx*c-by*s,y+bx*s+by*c,qx];}
+function skPrismSide(x,y,an,bl,bw,tl,tw,z0,zr,zf,i,A,B,E){if(!SKU)return null;const j=(i+1)&3,pa=skPrismW(x,y,an,bl,bw,i),pb=skPrismW(x,y,an,bl,bw,j),pe=skPrismW(x,y,an,tl,tw,i),la=skLoc(pa[0],pa[1]),lb=skLoc(pb[0],pb[1]),le=skLoc(pe[0],pe[1]);
+ let tx=lb[0]-la[0],ty=lb[1]-la[1];const L=Math.hypot(tx,ty)||1;tx/=L;ty/=L;const U=q=>q[0]*tx+q[1]*ty+(q[0]*ty-q[1]*tx)*.37;
+ return skAff([U(la),z0],[U(lb),z0],[U(le),pe[2]>0?zf:zr],A,B,E);}
+function skPrismTop(x,y,an,tl,tw,T){if(!SKU)return null;const p0=skPrismW(x,y,an,tl,tw,0),p1=skPrismW(x,y,an,tl,tw,1),p3=skPrismW(x,y,an,tl,tw,3);return skAff(skLoc(p0[0],p0[1]),skLoc(p1[0],p1[1]),skLoc(p3[0],p3[1]),T[0],T[1],T[3]);}
+/* any flat face given by three of its corners in the world (x,y,z) and on screen: lying faces take the unit's own floor plan as texture
+   coordinates, standing faces run along their bottom edge and up their height */
+function skFace3(W0,W1,W2,S0,S1,S2){if(!SKU)return null;const l0=skLoc(W0[0],W0[1]),l1=skLoc(W1[0],W1[1]),l2=skLoc(W2[0],W2[1]),z0=W0[2]||0,z1=W1[2]||0,z2=W2[2]||0;
+ const ax=l1[0]-l0[0],ay=l1[1]-l0[1],az=z1-z0,bx=l2[0]-l0[0],by=l2[1]-l0[1],bz=z2-z0,nx=ay*bz-az*by,ny=az*bx-ax*bz,nz=ax*by-ay*bx,nl=Math.hypot(nx,ny,nz)||1;
+ if(Math.abs(nz)/nl>.6)return skAff(l0,l1,l2,S0,S1,S2);
+ let tx=-ny,ty=nx;const tl=Math.hypot(tx,ty)||1;tx/=tl;ty/=tl;const U=l=>l[0]*tx+l[1]*ty+(l[0]*ty-l[1]*tx)*.37;return skAff([U(l0),z0],[U(l1),z1],[U(l2),z2],S0,S1,S2);}
+function skPoly3(pts){if(!SKU||pts.length<3)return null;const n=pts.length;let best=null,ba=0;for(let i=1;i<n-1;i++){const a=pts[0],b=pts[i],c=pts[i+1>=n?n-1:i+1];const cr=Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))+Math.abs(((b[2]||0)-(a[2]||0)))*Math.hypot(c[0]-a[0],c[1]-a[1])+Math.abs(((c[2]||0)-(a[2]||0)))*Math.hypot(b[0]-a[0],b[1]-a[1]);if(cr>ba){ba=cr;best=[a,b,c];}}
+ if(!best)return null;const [a,b,c]=best;return skFace3(a,b,c,PP(a[0],a[1],a[2]||0),PP(b[0],b[1],b[2]||0),PP(c[0],c[1],c[2]||0));}
+function skFlat(x,y,z){return skFace3([x,y,z],[x+1,y,z],[x,y+1,z],PP(x,y,z),PP(x+1,y,z),PP(x,y+1,z));}
+let SKC0=null,SKC1=null,SKCM=null;
+function skAim(C,p){try{if(SKFM){p.setTransform(SKFM);p.__m=null;return;}if(SKBB){p.setTransform(SKBB);p.__m=null;return;}const T=C.getTransform();if(SKC1===SKA&&SKC0&&T.a===SKC0.a&&T.b===SKC0.b&&T.c===SKC0.c&&T.d===SKC0.d&&T.e===SKC0.e&&T.f===SKC0.f){if(p.__m!==SKCM){p.setTransform(SKCM);p.__m=SKCM;}return;}
+ SKC0=T;SKC1=SKA;SKCM=DOMMatrix.fromMatrix(T).invertSelf().multiplySelf(SKA);p.setTransform(SKCM);p.__m=SKCM;}catch(e){}}
+function skHook(){const C=cx;if(SKH===C)return;SKH=C;const P=CanvasRenderingContext2D.prototype;
+ C.fill=function(){const s=this.fillStyle;if(SKA&&typeof s==='object'&&SKPT.has(s))skAim(this,s);return P.fill.apply(this,arguments);};
+ C.fillRect=function(){const s=this.fillStyle;if(SKA&&typeof s==='object'&&SKPT.has(s))skAim(this,s);return P.fillRect.apply(this,arguments);};
+ C.stroke=function(){const s=this.strokeStyle;if(SKA&&typeof s==='object'&&SKPT.has(s))skAim(this,s);return P.stroke.apply(this,arguments);};}
+function skUnhook(){if(SKH){delete SKH.fill;delete SKH.fillRect;delete SKH.stroke;SKH=null;}}
+function skinOff(){if(--SKD>0)return;SKD=0;if(SKS){const [t,a,b,c]=SKS;TC[t]=a;TD[t]=b;TL[t]=c;SKS=null;}SKA=null;SKBB=null;SKFM=null;skUnhook();}
 /* menu preview: a tank in the chosen skin and army color */
 const SKPV={};
 function skPrev(k,ci0){const key=k+'_'+ci0;if(SKPV[key])return SKPV[key];const S=96,c=document.createElement('canvas');c.width=c.height=S;const real=cx,g0=G,oci=ci;let url='';
@@ -4518,7 +4561,7 @@ function skPrev(k,ci0){const key=k+'_'+ci0;if(SKPV[key])return SKPV[key];const S
 
 let NOART=false;
 const SHG=new Map();
-function drawUnit(u,sel){skinOn(u.team);try{drawUnit0(u,sel);}finally{skinOff();}}
+function drawUnit(u,sel){skinOn(u.team,u);try{drawUnit0(u,sel);}finally{skinOff();}}
 function drawUnit0(u,sel){const d=UD[u.type],t=ci(u.team),r=u.r,ty=d.look||u.type;
  const mvd=u.dx0==null?0:Math.hypot(u.x-u.dx0,u.y-u.dy0),moving=mvd>.12&&mvd<40,bob=u.air&&G&&!u.np?Math.sin(VT*2.2+(u.id||0))*2:0,al=u.alt==null?1:Math.min(1,u.alt);u.dx0=u.x;u.dy0=u.y;u.tp=((u.tp||0)+(moving?mvd:0))%6;
  if(!((ISO&&G)||d.sea||d.giant)){cx.fillStyle=u.air?'rgba(0,0,0,.22)':'rgba(0,0,0,.2)';cx.beginPath();if(u.air)cx.ellipse(u.x+10*al+1,u.y+16*al+2,r*1.1,r*.7,0,0,6.3);else cx.ellipse(u.x+2,u.y+3.5,r*1.15,r*.95,0,0,6.3);cx.fill();}
@@ -4661,13 +4704,13 @@ function pdk(x,y){return ISO?DK(x,y):y;}
 function pShc(hex,k){if(typeof hex!=='string')return skShade(hex,k);const n=parseInt(hex.slice(1),16);return rgb3(n>>16,(n>>8)&255,n&255,k);}
 function ngon(x,y,r,n,rot){const o=[];for(let i=0;i<n;i++){const a=(rot||0)+i*6.2832/n;o.push([x+Math.cos(a)*r,y+Math.sin(a)*r]);}return o;}
 function rbox(x,y,w,d,an){const c=Math.cos(an||0),s=Math.sin(an||0),o=[];for(const [i,j] of [[-1,-1],[1,-1],[1,1],[-1,1]]){const u=i*w/2,v=j*d/2;o.push([x+u*c-v*s,y+u*s+v*c]);}return o;}
-function pPoly(P,z,fill,stroke){cx.beginPath();P.forEach((q,i)=>{const p=pq(q[0],q[1],z);i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]);});cx.closePath();if(fill){cx.fillStyle=fill;cx.fill();}if(stroke){cx.strokeStyle=stroke;cx.stroke();}}
+function pPoly(P,z,fill,stroke){if(SKU&&SKA&&fill&&typeof fill==='object'&&SKPT.has(fill))SKFM=skTop(z);cx.beginPath();P.forEach((q,i)=>{const p=pq(q[0],q[1],z);i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]);});cx.closePath();if(fill){cx.fillStyle=fill;cx.fill();}SKFM=null;if(stroke){cx.strokeStyle=stroke;cx.stroke();}}
 /* an extruded shape: walls that face the eye, back to front, then the top */
 function pPrism(P,z0,z1,col,top,line){const n=P.length;let mx0=0,my0=0;for(const q of P){mx0+=q[0];my0+=q[1];}mx0/=n;my0/=n;const F=[];
  for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];let nx=b[1]-a[1],ny=a[0]-b[0];const l=Math.hypot(nx,ny)||1;nx/=l;ny/=l;const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;if((mx-mx0)*nx+(my-my0)*ny<0){nx=-nx;ny=-ny;}if(pvis(nx,ny,mx,my))F.push([pdk(mx,my),a,b,nx,ny]);}
  F.sort((p,q)=>p[0]-q[0]);cx.strokeStyle='#15110b';cx.lineWidth=1.1*MLW;cx.lineJoin='round';
  for(const f of F){const a=f[1],b=f[2],A=pq(a[0],a[1],z0),B=pq(b[0],b[1],z0),C=pq(b[0],b[1],z1),D=pq(a[0],a[1],z1),k=.5+.36*Math.max(0,f[3]*PSUN[0]+f[4]*PSUN[1]);
-  cx.fillStyle=pShc(col,k);cx.beginPath();cx.moveTo(A[0],A[1]);cx.lineTo(B[0],B[1]);cx.lineTo(C[0],C[1]);cx.lineTo(D[0],D[1]);cx.closePath();cx.fill();if(line!==0)cx.stroke();}
+  cx.fillStyle=pShc(col,k);if(SKU&&SKA&&typeof col!=='string')SKFM=skSide(a,b,z0,z1,A,B,D);cx.beginPath();cx.moveTo(A[0],A[1]);cx.lineTo(B[0],B[1]);cx.lineTo(C[0],C[1]);cx.lineTo(D[0],D[1]);cx.closePath();cx.fill();SKFM=null;if(line!==0)cx.stroke();}
  pPoly(P,z1,top||col,line===0?null:'#15110b');}
 function pBox(x,y,w,d,z0,z1,col,an,top){pPrism(rbox(x,y,w,d,an),z0,z1,col,top);}
 function pCyl(x,y,r,z0,z1,col,top,n){pPrism(ngon(x,y,r,n||14,.1),z0,z1,col,top);}
@@ -5287,6 +5330,7 @@ const HOWTO='<ul><li><b>Tap</b> a unit, then tap ground to move or an enemy to a
    three blocks — map, players, options — with the map always visible (StarCraft II, Age of Empires, 0 A.D.), and the mobile habits of Clash Royale:
    the main action in yellow within thumb reach, shallow menus, and pickers that open over the screen instead of replacing it. */
 let SHEET=null,SHEETIN=0,SHF='all',SETTAB='view';
+function mapGrp(M){return M.size==='Small'?'Small':M.size==='Medium'?'Medium':M.size==='Large'?'Large':M.size==='Massive'?'Colossus':'Huge';}
 let PDIFF=1;try{const v=parseFloat(localStorage.getItem('dl_diff'));if(DVAL.indexOf(v)>=0)PDIFF=v;}catch(e){}
 const ICO={
  battle:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/><circle cx="12" cy="12" r="1.6" class="f"/></svg>',
@@ -5329,9 +5373,11 @@ function mpHtml(){let h='<div class="box setup">'+hdr('Multi<i>player</i>');
  return h+mpTopHtml()+'<div id="mpbox"></div><p class="lb sep">Your setup for hosting</p>'+mapCard(false,'Battlefield')+armyCard()+optsHtml()+'</div>';}
 /* ---- bottom sheets ---- */
 function sheetHtml(){if(!SHEET)return '';const an=SHEETIN?' in':'';SHEETIN=0;let b='';
- if(SHEET==='map'){const F=[['all','All'],['Small','Small'],['Medium','Medium'],['Large','Large'],['Very large','Huge'],['sea','Sea']];
-  b='<div class="shh"><b>Choose a battlefield</b><button class="shx" data-sh="x">Close</button></div><div class="chips shf">'+F.map(f=>'<button data-shf="'+f[0]+'" class="'+(SHF===f[0]?'on':'')+'">'+f[1]+'</button>').join('')+'</div><div class="mgrid">';
-  MAPS.slice(0,NSK).forEach((M,i)=>{if(SHF==='sea'?!(M.lk||M.air):SHF!=='all'&&M.size!==SHF)return;b+='<button class="mtile'+(i===mapIx?' on':'')+'" data-m="'+i+'"><img src="'+mapPrev(M)+'" alt=""><b>'+M.n+'</b><em>'+M.size+' · '+M.mx+'P'+(M.air?' · air &amp; sea':M.lk?' · sea':'')+'</em></button>';});b+='</div>';}
+ if(SHEET==='map'){const GR=[['Small','Small'],['Medium','Medium'],['Large','Large'],['Huge','Huge'],['Colossus','Colossus']],F=[['all','All']].concat(GR,[['sea','Sea']]);
+  b='<div class="shh"><b>Choose a battlefield</b><button class="shx" data-sh="x">Close</button></div><div class="chips shf">'+F.map(f=>'<button data-shf="'+f[0]+'" class="'+(SHF===f[0]?'on':'')+'">'+f[1]+'</button>').join('')+'</div>';
+  for(const g of GR){if(SHF!=='all'&&SHF!=='sea'&&SHF!==g[0])continue;const L=MAPS.slice(0,NSK).map((M,i)=>[M,i]).filter(q=>mapGrp(q[0])===g[0]&&(SHF!=='sea'||q[0].lk||q[0].air));if(!L.length)continue;
+   b+='<p class="lb">'+g[1]+(g[0]==='Colossus'?' · home of a colossus unit':'')+' · '+L.length+'</p><div class="mgrid">';
+   for(const [M,i] of L)b+='<button class="mtile'+(i===mapIx?' on':'')+'" data-m="'+i+'"><img src="'+mapPrev(M)+'" alt=""><b>'+M.n+'</b><em>'+M.size+' · '+M.mx+'P'+(M.air?' · air &amp; sea':M.lk?' · sea':'')+'</em></button>';b+='</div>';}}
  else if(SHEET==='cmd'){b='<div class="shh"><b>Your army</b><button class="shx main" data-sh="x">Done</button></div><p class="lb">Color</p><div class="sws">'+swatches(PREF,'c')+'</div><p class="lb">Unit skin · '+SKINS[PSKIN].n+'</p><div class="skg">'+SKINS.map((q,i)=>'<button class="skt'+(i===PSKIN?' on':'')+'" data-skin="'+i+'" aria-label="'+q.n+'"><img src="'+skPrev(i,PREF)+'" alt=""><b>'+q.n+'</b></button>').join('')+'</div><p class="mpnote" style="margin:-2px 0 6px">'+SKINS[PSKIN].d+'. Only changes how your units look.</p><p class="lb">Commander</p>';
   CMD.forEach((c,i)=>{const on=i===PCMD;b+='<button class="crow'+(on?' on':'')+'" data-k="'+i+'"><span class="crh"><b>'+c.n+'</b><em>'+c.t+'</em>'+(on?'<i>✓</i>':'')+'</span>'+(on?'<ul>'+c.pro.map(x=>'<li class="pro">'+x+'</li>').join('')+c.con.map(x=>'<li class="con">'+x+'</li>').join('')+'</ul>'+(c.ab?'<span class="cab">Signature ability — <b>'+c.ab.f+'</b>: '+c.ab.d+' (recharges in '+c.ab.cd+'s)</span>':''):'<small>'+c.pro[0]+'</small>')+'</button>';});}
  else if(SHEET==='load'){b='<div class="shh"><b>Saved games</b><button class="shx" data-sh="x">Close</button></div>'+savesHtml(false);}
