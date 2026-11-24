@@ -1746,7 +1746,8 @@ if(typeof document!=='undefined'){setInterval(mxTick,100);for(const ev of ['poin
    Twenty-five spoken lines sit beside the page in voice/, each named for what it reports:
    start "Battle control online", built "Construction complete", air "Aircraft ready", sold "Building sold", funds "Insufficient funds",
    lost "Building lost", base "Our base is under attack", taken "Our building has been captured", detect "Enemy units detected",
-   swdet "Enemy super weapon detected", launch "Launch detected", sat "Satellite strike online", promo "Commander promoted",
+   swdet "Enemy super weapon detected", launch "Launch detected", depl "Resources depleted", objf "Objective failed", resd "Research complete",
+   hvatk "Harvester under attack", allyhit "Allies taking fire", sat "Satellite strike online", promo "Commander promoted",
    reinf "Reinforcements have arrived", obj "Objective complete", side "Side objective complete", newobj "New objective",
    won "Mission accomplished", failed "Mission failed", beat "Enemy commander defeated", cap "Building captured",
    swrdy "Super weapon ready", swall (the super weapon Easter egg's own line), unit "Unit ready", ship "Vessel launched", ulost "Unit lost".
@@ -1757,7 +1758,8 @@ if(typeof document!=='undefined'){setInterval(mxTick,100);for(const ev of ['poin
    start at any moment. Like the spoken unit replies they are heard with "Music & effects" and are silent with "Effects only" and
    "Off". If a file cannot be loaded its event does what it did before (a spoken alert for warnings, nothing otherwise). */
 const VOX={start:[.72,.07,1.96,1,3],built:[1.37,.01,1.72,0,5],air:[1.25,0,1.41,0,8],sold:[1.07,0,1.41,0,2],funds:[1.66,.08,1.58,0,6],lost:[1.83,.26,1.54,1,10],base:[.81,.11,1.8,2,25],taken:[.86,.02,1.99,2,6],detect:[.94,.07,1.73,1,45],swdet:[.88,.03,2.11,2,6],launch:[1.15,.12,1.5,2,8],sat:[.83,.06,2.09,1,20],promo:[1.02,.1,1.66,1,4],reinf:[.8,.09,2.04,1,45],obj:[.93,.05,1.54,1,1.5],side:[1.1,.01,1.92,1,1.5],newobj:[.97,.06,1.34,1,1.5],won:[.97,.06,1.64,3,3],failed:[1.57,.26,1.54,3,3],beat:[1,.12,2.07,2,5],
- cap:[.93,.06,1.55,1,6],zwake:[1.05,.1,3.66,2,30],swrdy:[.83,.05,1.58,1,5],swall:[.87,.08,5.1,2,5],unit:[1.34,.05,1.23,0,8],ship:[1.36,0,1.41,0,8],ulost:[1.98,.27,1.57,0,15]},
+ cap:[.93,.06,1.55,1,6],zwake:[1.05,.1,3.66,2,30],swrdy:[.83,.05,1.58,1,5],swall:[.87,.08,5.1,2,5],unit:[1.34,.05,1.23,0,8],ship:[1.36,0,1.41,0,8],ulost:[1.98,.27,1.57,0,15],
+ depl:[1.22,.06,1.58,1,20],objf:[1.41,.19,1.54,1,1.5],resd:[1.08,.03,1.37,0,4],hvatk:[.68,.14,1.8,1,30],allyhit:[.6,.2,1.81,1,40]},
  VX={buf:{},fail:{},st:0,q:[],cur:null,curP:-1,until:0,last:{},tts:0,gain:.9,w:0,log:[],rs:null,rl:'',rt:-1e9,rgain:.8,rlog:[]};
 function voxLoad(){if(VX.st||!AC||sndM!==0||typeof fetch==='undefined')return;VX.st=1;
  for(const k of Object.keys(VOX).concat(Object.keys(VOR))){const bad=()=>{VX.fail[k]=1;};
@@ -1862,19 +1864,19 @@ const SFR={gun1:['cannon1',.045,1.25,2,.5,.61,60],gun2:['cannon2',0,1.1,1,.45,.8
  jet1:['jet1',1.4,4.5,300,1,.21,0],jet2:['jet2',1.4,4.5,300,1,.197,0],heli:['rotor',.3,7,0,0,.165,0],eng1:['diesel1',.3,7,0,0,.11,0],
  eng2:['diesel2',.3,7,0,0,.114,0],
  /* the fourth set: flamethrower, mining, marching, building, light engines, airships, hacking, ship engines (loops); the vortex, torpedo, grenade, troops set down, taps, refusals, alerts, drone wrecks */
- flm1:['flame1',0,2.35,0,0,.51,0],flm2:['flame2',0,2.1,0,0,.39,0],hv1:['harvest1',.45,3,0,0,.87,0],hv2:['harvest2',.15,3.55,0,0,1.07,0],mrch:['march',0,3.53,0,0,.35,0],bld:['build',.05,3.65,0,0,.44,0],lv1:['lightveh1',0,4,0,0,.175,0],lv2:['lightveh2',0,4,0,0,.117,0],air1:['airship1',.4,3.2,0,0,.075,0],air2:['airship2',0,3.9,0,0,.08,0],hck:['hack',.1,3.35,0,0,.82,0],shp:['shipeng',.25,2.8,0,0,.78,0],mael:['maelstrom',0,13.08,0,.8,.81,0],torp1:['torpedo',0,2.3,2,.6,1.22,30],gren1:['grenade',0,.9,2,.35,.4,0],sdn:['setdown',.1,1,2,.4,.53,0],tap1:['tap',.7,.26,2,.12,1.08,0],tap2:['tap',2.1,.26,2,.12,2.36,0],buzz:['buzz',0,.75,3,.15,.31,0],alrt:['alert',0,1.35,3,.4,.143,0],dcr:['dronecrash',.55,1.6,5,.5,.29,0],
+ flm1:['flame1',0,2.35,0,0,.51,0],flm2:['flame2',0,2.1,0,0,.39,0],hv1:['harvest1',.45,3,0,0,.87,0],hv2:['harvest2',.15,3.55,0,0,1.07,0],mrch:['march',0,3.53,0,0,.35,0],bld:['build',.05,3.65,0,0,.44,0],lv1:['lightveh1',0,4,0,0,.175,0],lv2:['lightveh2',0,4,0,0,.117,0],air1:['airship1',.4,3.2,0,0,.075,0],air2:['airship2',0,3.9,0,0,.08,0],hck:['hack',.1,3.35,0,0,.82,0],shp:['shipeng',.25,2.8,0,0,.78,0],mael:['maelstrom',0,13.08,0,.8,.81,0],torp1:['torpedo',0,2.3,2,.6,1.22,30],gren1:['grenade',0,.9,2,.35,.4,0],sdn:['setdown',.1,1,2,.4,.53,0],tap1:['tap',.7,.26,2,.12,1.08,0],tap2:['tap',2.1,.26,2,.12,2.36,0],mpjoin:['mpjoin',0,1.75,2,.3,.35,0],mpcd:['mpstart',0,2.3,1,.12,.19,0],buzz:['buzz',0,.75,3,.15,.31,0],alrt:['alert',0,1.35,3,.4,.143,0],dcr:['dronecrash',.55,1.6,5,.5,.29,0],
  /* the fifth set: the Boreal Array's Whiteout, waves on the shore, desert wind */
  bor1:['boreal1',0,10.6,3,.6,.32,40],bor2:['boreal2',0,10.6,3,.6,.71,40],wav1:['waves1',0,4,30,.5,.43,0],wav2:['waves2',0,4,30,.5,.24,0],wnd1:['wind1',0,4,30,.4,.69,0],wnd2:['wind2',0,4,30,.4,.25,0],
  /* the sixth set: the colossus upgrades (synthesized) */
  cxk1:['cxcrack',0,3.4,2,.6,.85,0],cxst:['cxstrain',0,2.6,20,.5,.5,0],cxrl:['cxrail',0,3.6,5,.8,.85,0],cxfz:['cxfreeze',0,2.8,10,.5,.88,0],cxsh:['cxshatter',0,2.6,2,.6,.88,0],cxlf:['cxlift',0,4.4,30,.6,.58,0],cxld:['cxland',0,3.2,5,.8,.72,0],cxmt:['cxmeteor',0,2.6,10,.5,.9,0],zrrl:['zrrail',0,1.5,2,.4,.8,0],cxsp:['cxsputter',0,1.9,5,.4,.55,0]},
  SFC={cannon:[['gun1','gun2'],.12,4,.05],missile:[['rkt1','rkt2'],.15,4,.05],boom:[['boom1','boom2'],.1,5,.07],big:[['big1','big2'],.28,3,.05],fall:[['fall','fall2'],.45,2,.06],
-  zap:[['zap1','zap2','zap3'],.12,3,.06],place:[['metal','metal2'],.25,1,0],cash:[['cash1','cash2'],1,1,0],done:[['beep2'],.6,1,0],cap:[['beep1'],.9,1,0],horn:[['horn1','horn2'],6,1,0],
+  zap:[['zap1','zap2','zap3'],.12,3,.06],place:[['metal','metal2'],.25,1,0],cash:[['cash1','cash2'],1,1,0],join:[['mpjoin'],1,1,0],mcount:[['mpcd'],1.5,1,0],done:[['beep2'],.6,1,0],cap:[['beep1'],.9,1,0],horn:[['horn1','horn2'],6,1,0],
   /* mg: the last few rounds of a burst with its echo, so a run of them is steady fire that ends as a burst should; rifle: one round */
   mg:[['mg1','mg2','mg3'],.2,3,.05],rifle:[['rf1','rf2'],.07,4,.08],bgun:[['bgun','bgun2'],.3,2,.05],ar:[['ar1','ar2'],.25,3,.05],siren:[['siren1','siren2'],12,1,0],arty:[['arty1','arty2'],.6,3,.06],huge:[['huge1','huge2'],.4,2,.04],zwake:[['colos'],5,1,0],igtake:[['lift'],5,1,0],cxcrack:[['cxk1'],1,2,.04],cxstrain:[['cxst'],2,2,.06],cxrail:[['cxrl'],1,2,0],cxfreeze:[['cxfz'],1,2,.03],cxshatter:[['cxsh'],1,2,.04],cxlift:[['cxlf'],1,2,0],cxland:[['cxld'],1,2,.03],cxmeteor:[['cxmt'],1,2,0],cxsputter:[['cxsp'],1.5,2,.05],zrrail:[['zrrl'],.4,2,.03],
   bomb:[['bomb1','bomb2'],.2,3,.06],whis:[['wh1','wh2'],.5,2,.03],jet:[['jet1','jet2'],3.5,2,.05],
   torpedo:[['torp1'],.3,3,.05],grenade:[['gren1'],.15,4,.06],tap:[['tap1','tap2'],.05,2,.03],no:[['buzz'],.3,1,0],alert:[['alrt'],1,1,0],drop:[['sdn'],.4,1,.03],dcrash:[['dcr'],.2,3,.06],waves:[['wav1','wav2'],2.5,2,.03],wind:[['wnd1','wnd2'],1.5,3,.04]},
  /* the synthesized sound that stands in for a name (0: nothing), and names that are only ever synthesized: pop is the old soft burst, drop the old thud */
- SFB={zwake:'big',igtake:'big',cxcrack:'big',cxrail:'big',cxshatter:'big',cxland:'big',cxmeteor:'big',cxfreeze:'zap',cxlift:0,cxstrain:0,cxsputter:0,zrrail:'zap',cannon:'gun',missile:'rocket',fall:'big',pop:'boom',drop:'place',horn:0,mg:'shot',rifle:'shot',ar:'shot',siren:'alert',bgun:'gun',bomb:'rocket',arty:0,huge:0,whis:0,jet:0,torpedo:'rocket',grenade:'rocket',dcrash:'boom',waves:0,wind:0},
+ SFB={join:'cap',mcount:'tap',zwake:'big',igtake:'big',cxcrack:'big',cxrail:'big',cxshatter:'big',cxland:'big',cxmeteor:'big',cxfreeze:'zap',cxlift:0,cxstrain:0,cxsputter:0,zrrail:'zap',cannon:'gun',missile:'rocket',fall:'big',pop:'boom',drop:'place',horn:0,mg:'shot',rifle:'shot',ar:'shot',siren:'alert',bgun:'gun',bomb:'rocket',arty:0,huge:0,whis:0,jet:0,torpedo:'rocket',grenade:'rocket',dcrash:'boom',waves:0,wind:0},
  /* what a projectile weapon sounds like, by who fires it; anything not listed keeps its synthesized sound */
  WSN={bastion:'cannon',paladin:'cannon',iron:'cannon',crawler:'cannon',barge:'cannon',bul:'cannon',bow:'cannon',anvil:'bgun',thunder:'bgun',shore:'bgun',lancer:'missile',volley:'missile',talon:'missile',tide:'missile',condor:'bomb',shrike:'bomb',kestrel:'mg',torp:'torpedo',gren:'grenade'},
  /* bullets: Troopers and the Vanguard fire assault-rifle bursts, the Marksman single rounds, everything else with a gun that hits at once is a machine gun */
@@ -1921,6 +1923,7 @@ function sxPlay(k,n,C,vol){const b=SX.buf[k],t=AC.currentTime,s=AC.createBufferS
  for(let i=V.length-1;i>=0;i--)if(V[i].end<=t)V.splice(i,1);
  while(V.length>=C[2]){const o=V.shift();try{o.g.gain.setTargetAtTime(0,t,.025);o.s.stop(t+.14);}catch(e){}}
  s.buffer=b;s.playbackRate.value=r;if(vol>0&&vol<1)g.gain.value=vol;s.connect(g);g.connect(SXG||SG||AC.destination);s.start(t);V.push({s,g,end:t+b.duration/r});SX.lk[n]=k;SX.log.push(k);if(SX.log.length>200)SX.log.shift();}
+function sxStop(n){const V=SX.v[n];if(!V||!AC)return;const t=AC.currentTime;for(const o of V)try{o.g.gain.setTargetAtTime(0,t,.02);o.s.stop(t+.1);}catch(e){}V.length=0;}
 function sxHush(){const t=AC?AC.currentTime:0;for(const n in SX.v){for(const o of SX.v[n])try{o.g.gain.setTargetAtTime(0,t,.02);o.s.stop(t+.1);}catch(e){}SX.v[n].length=0;}
  for(const k in SX.sc){const o=SX.sc[k];try{o.g.gain.setTargetAtTime(0,t,.03);o.s.stop(t+.15);}catch(e){}delete SX.sc[k];}}
 /* sounds that belong to what is on screen rather than to one moment, looked at ten times a second: the rotor loop while a helicopter
@@ -2003,6 +2006,8 @@ function setVet(u,n){if((UD[u.type]||0).giant)return;while(u.vet<n){u.vet++;u.ma
 const vm=s=>!s?1:(s.k==='u'&&s.hp<s.max/3?1+[0,.2,.35,.5][lv(s.team,'stand')]:1)*(1+.15*(s.vet||0))*(s.air?1+[0,.12,.2,.28][lv(s.team,'ace')]:1)*cmM(s.team,'dmg',s.k==='b'?'def':ucat(UD[s.type]))*(s.k==='b'&&G.up[s.team]&&G.up[s.team].harden?1.25:1);
 function unitCount(team,t){let n=0;for(const u of G.units)if(u.team===team&&u.type===t)n++;for(const b of G.blds)if(b.team===team)for(const q of b.queue)if(q===t)n++;for(const u of G.units)if(u.team===team&&u.queue)for(const q of u.queue)if(q===t)n++;return n;}
 function rank(T){if(T==null)T=ME;let r=0;for(const x of XPT)if(G.pl[T].cxp>=x)r++;return r+(G.pl[T].bst||0);}
+/* a human player's ally (a bot or the other player on the same side) is being hit: tell that player, at most every 40 s */
+function allyHit(t){if(!G||G.demo||!(t.k==='b'||t.k==='u'))return;const hs=NET?[0,1]:[ME];for(const H of hs){if(H===t.team||G.side[H]!==G.side[t.team]||!G.pl[H])continue;const p=G.pl[H];if(p.allyT!=null&&G.t-p.allyT<40)continue;p.allyT=G.t;note(H,'Allies taking fire','alert',t.x,t.y,'allyhit');}}
 function note(T,msg,snd,px,py,vk){if(G&&G.demo)return;if(T===ME){if(msg)toast(msg);if(!(vk&&vox(vk))&&msg&&(snd==='alert'||snd==='siren'))announce(msg);if(px!=null)ping(px,py);if(snd)sfx(snd);}else if(NET&&NET.role==='host'&&T===1)NET.notes.push([msg||'',snd||'',px==null?-1:px|0,py==null?-1:py|0,vk||'']);}
 function burst(x,y,r){if(V3){const p=PP(x,y,0);if(!G||p[3]<30||p[0]<-150||p[1]<-150||p[0]>VW+150||p[1]>VH+150)return;}else{const px=pX(x,y),py=pY(x,y);if(!G||px<cam.x-150||py<cam.y-150||px>cam.x+VW/cam.z+150||py>cam.y+VH/cam.z+150)return;}
  if(GQ>0&&PT.length<PCAP()+40){const qm=[0,1,1.5,2][GQ],n=Math.round(Math.min(10,3+(r/7|0))*qm),m=Math.round(Math.min(6,2+(r/14|0))*qm);
@@ -2225,7 +2230,7 @@ function inRange(s,t,d){const g=gap(s,t);return g<=s.rg&&g>=(d.min||0);}
 function dmgMult(d,t,team){let m;if(t.k==='u'){const td=UD[t.type];m=td.air&&!t.gr?(d.vsAir||1):td.sea?(d.vsSea||d.vsVeh||1):td.veh?(d.vsVeh||1):(d.vsInf||1);}else m=(d.vsBld||d.vsVeh||1)*(d.sea?1+.15*lv(team,'coast'):1);return G.up[team].rounds?m*1.2:m;}
 function ping(x,y){G.pings.push({x,y,t:3});}
 function hurt(t,dmg,src,kt){if(t.hp<=0||t.gr===2||t.inv)return;if(src&&!G.demo&&(G.side[t.team]===G.side[ME]||G.side[src.team]===G.side[ME]))MU.heat=Math.min(1,MU.heat+.05);if(t.k==='br'){t.hp-=dmg;if(t.hp<=0)brDown(t,kt==null?(src?src.team:-1):kt);return;}if(kt==null)kt=src?src.team:-1;if(t.k==='b')t.hitT=G.t;if(t.shT>G.t)dmg*=.7;if(t.k==='u'&&UD[t.type].giant)dmg*=.6;if(t.mkT>G.t)dmg*=t.mkM||1;if(t.k==='u'&&UD[t.type].veh){const L=lv(t.team,'plate');if(L)dmg*=1-.08*L;}t.hp-=dmg;
- {const P=G.pl[t.team];if((t.k==='b'||(t.k==='u'&&UD[t.type].hv))&&G.t-P.alertT>12){P.alertT=G.t;note(t.team,t.k==='b'?'Your base is under attack':UD[t.type].n+' under attack','alert',t.x,t.y,t.k==='b'?'base':'');}}
+ {const P=G.pl[t.team];if((t.k==='b'||(t.k==='u'&&UD[t.type].hv))&&G.t-P.alertT>12){P.alertT=G.t;note(t.team,t.k==='b'?'Your base is under attack':UD[t.type].n+' under attack','alert',t.x,t.y,t.k==='b'?'base':'hvatk');}if(G.t-(P.alyT==null?-99:P.alyT)>3){P.alyT=G.t;allyHit(t);}}
  if(t.hp<=0){const ds=dieSnd(t);if(t.type!=='zero'&&t.type!=='ignis'&&t.type!=='weaver'){fxAdd({k:'bm',x:t.x,y:t.y,t:.45,T:.45,r:t.r*2.2,s:ds});if(onScreen(t.x,t.y))sfx(ds);}if(t.k==='b')voxT(t.team,'lost');else if(t.k==='u'&&t.type!=='sentinel')voxT(t.team,'ulost');const v=t.k==='u'?UD[t.type].cost:(BD[t.type].cost||1500);
   if(src&&src.k==='u'&&src.hp>0){src.kills++;src.xp+=v;if(src.vet<3&&src.xp>=Math.max(150,UD[src.type].cost)*[1,2.5,5][src.vet]){setVet(src,src.vet+1);fxAdd({k:'mk',x:src.x,y:src.y,t:.8,T:.8,c:'#ffc247',r:src.r+6});}}
    else if(src&&src.k==='b'&&src.hp>0&&BD[src.type].dmg){src.kills=(src.kills|0)+1;src.xp=(src.xp||0)+v;src.vet=src.vet|0;if(src.vet<3&&src.xp>=Math.max(300,BD[src.type].cost||0)*[1,2.5,5][src.vet]){setVet(src,src.vet+1);fxAdd({k:'mk',x:src.x,y:src.y,t:.8,T:.8,c:'#ffc247',r:src.r+6});}}
@@ -2846,7 +2851,7 @@ function efacTick(p,dt){if(NET&&NET.role==='client')return;if(!p.up)p.up={};p.cr
   else if(foe(p.owner,T)){const old=p.owner,lost=p.crew|0,was=p.rq;p.owner=T;p.so=T;p.crew=1;p.rq=null;p.rp=0;efacIn(p,u);fxAdd({k:'bm',x:p.x,y:p.y,t:.7,T:.7,r:120,s:'big'});
    note(old,'An enemy Engineer took the Engineering Facility — your '+lost+' Engineer'+(lost===1?'':'s')+' inside '+(lost===1?'is':'are')+' lost'+(was?', and the '+CXU[was].n+' research with them':''),'siren',p.x,p.y,'taken');
    for(let i=0;i<G.nt;i++)if(i!==old)note(i,i===T?'Engineering Facility taken — man it with 4 more Engineers':!foe(i,T)?'Your ally has taken the Engineering Facility':lairName(T)+' has taken the Engineering Facility',i===T||!foe(i,T)?'cap':'alert',p.x,p.y,i===T?'cap':null);}}
- if(p.rq&&efacOn(p)){p.rp=(p.rp||0)+dt/CXT;if(p.rp>=1){const k=p.rq;p.up[k]=1;p.rq=null;p.rp=0;for(let i=0;i<G.nt;i++)note(i,i===p.owner?CXU[k].n+' installed — '+CXU[k].sw+' now cripples colossi':!foe(i,p.owner)?'Your ally has installed '+CXU[k].n:lairName(p.owner)+' has installed '+CXU[k].n+' at the Engineering Facility',i===p.owner||!foe(i,p.owner)?'done':'alert',p.x,p.y);}}}
+ if(p.rq&&efacOn(p)){p.rp=(p.rp||0)+dt/CXT;if(p.rp>=1){const k=p.rq;p.up[k]=1;p.rq=null;p.rp=0;for(let i=0;i<G.nt;i++)note(i,i===p.owner?CXU[k].n+' installed — '+CXU[k].sw+' now cripples colossi':!foe(i,p.owner)?'Your ally has installed '+CXU[k].n:lairName(p.owner)+' has installed '+CXU[k].n+' at the Engineering Facility',i===p.owner||!foe(i,p.owner)?'done':'alert',p.x,p.y,i===p.owner?'resd':null);}}}
 function efacIn(p,u){u.hp=0;u.rm=1;u.efJob=0;fxAdd({k:'mk',x:p.x,y:p.y,t:.8,T:.8,c:'T'+u.team,r:p.r+30});}
 /* ---------- the colossi and the upgraded super weapons ---------- */
 const CXD={trap:60,ice:30,throw:52,meteor:60,reel:8,derail:45},CXL0=4,CXF=3;
@@ -3580,7 +3585,7 @@ function harv(u,d,dt){u.ta=u.a;
   const a=u.id*2.4,gx=u.ore.x+Math.cos(a)*u.ore.r*.55,gy=u.ore.y+Math.sin(a)*u.ore.r*.55;
   if(stepTo(u,gx,gy,u.sp,dt)<5||(dist(u,u.ore)<u.ore.r&&u.st>.4)){u.hs='mine';u.mt=0;}}
  else if(u.hs==='mine'){u.mt+=dt;if(!u.ore||u.ore.amt<=0){u.hs='go';return;}
-  if(u.mt>=3*(d.cap||1)){const t=Math.min(Math.round((G.up[u.team].drill?150:100)*(1+.15*lv(u.team,'veins'))*(d.cap||1)),u.ore.amt);u.ore.amt-=t;u.load=t;u.hs='back';}}
+  if(u.mt>=3*(d.cap||1)){const t=Math.min(Math.round((G.up[u.team].drill?150:100)*(1+.15*lv(u.team,'veins'))*(d.cap||1)),u.ore.amt);u.ore.amt-=t;u.load=t;u.hs='back';if(u.ore.amt<=0&&!u.ore.dep){u.ore.dep=1;note(u.team,'Resources depleted — this field has run dry','',u.ore.x,u.ore.y,'depl');}}}
  else{let dp=null,bd=1e9;for(const b of G.blds){if(b.team!==u.team||!b.built||(b.type!=='hq'&&b.type!=='ref'))continue;const dd=dist(b,u);if(dd<bd){bd=dd;dp=b;}}
   if(!dp)return;stepTo(u,dp.x,dp.y,u.sp,dt);
   if(dist(u,dp)<dp.r+u.r+8){G.money[u.team]+=Math.round(u.load*G.mult[u.team]*cmM(u.team,'harv')*(G.pl[u.team].surgeT>0?[1,1.5,2,2.5][lv(u.team,'surge')]:1));u.load=0;u.hs='go';}}}
@@ -3718,7 +3723,7 @@ function updBld(b,dt0){const d=BD[b.type],dt=dt0*(1+[0,.15,.25,.35][lv(b.team,'f
   if(t[0]==='!'){const k=t.slice(1);G.up[b.team][k]=true;delete G.upQ[b.team][k];if(k==='harden')for(const q of G.blds)if(q.team===b.team&&BD[q.type].dmg){q.max*=1.25;q.hp*=1.25;}
    if(HPF[k])for(const u of G.units)if(u.team===b.team&&hpUp(k,UD[u.type])){u.max*=HPF[k];u.hp*=HPF[k];}
    for(const e of G.units.concat(G.blds))if(e.team===b.team)refresh(e);
-   note(b.team,'Research complete: '+RD[k].n,'done');}
+   note(b.team,'Research complete: '+RD[k].n,'done',null,null,'resd');}
   else{const sh=UD[t].sea&&b.wx!=null,bt=sh&&UD[t].r>30?seaBerth(b,UD[t].r):null,u=spawn(b.team,t,bt?bt[0]:sh?b.wx+rnd(-8,8):b.x+b.dx*(b.r+14),bt?bt[1]:sh?b.wy+rnd(-8,8):b.y+b.dy*(b.r+14));if(bt)u.a=u.ta=Math.atan2(b.dy,b.dx);
    if(UD[t].ammo&&hangN(b))dock(u,b);else if(bt&&bt[2]){if(bt[2].length)u.mv={x:bt[2][0],y:bt[2][1]};}else if(!UD[t].hv)u.mv={x:b.rally.x+rnd(-20,20),y:b.rally.y+rnd(-20,20)};voxT(b.team,UD[t].air?'air':UD[t].sea?'ship':'unit');if(UD[t].sea){const P=G.pl[b.team];if(UD[t].r>=19||G.t-(P.hornT==null?-99:P.hornT)>25){P.hornT=G.t;sfxT(b.team,'horn');}}if(b.rep)tryQueue(b,t);}}}
  if(b.type==='bea'){const s=G.st[b.team];if(s.t<STRIKE_CD){s.t+=dt0*(G.upl[b.team]?1.4:1);if(s.t>=STRIKE_CD)note(b.team,'Storm Strike ready','done');}}
@@ -5035,19 +5040,23 @@ function mpTop(mm){return mm==='mp'&&!!(LOB.hosting||LOB.joining||LOB.spw);}
 function mpTopHtml(){const lob=LOB.hosting||LOB.joining||LOB.spw;return '<div class="mpnm"><p class="lb"'+(lob?' style="margin-top:4px"':'')+'>Your name</p><input id="mpnm" class="mpin" maxlength="16" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="Shown to other players" value="'+escH(PNAME)+'">'+(lob?'':'<div class="mpjc"><input id="mpjc" class="mpin" maxlength="4" autocomplete="off" spellcheck="false" autocapitalize="characters" enterkeyhint="go" placeholder="Got a match code? Type it"><button class="mpb" data-q="jc">Join</button></div>')+'</div>';}
 /* ---- lobby: host side ---- */
 function gCol(){const g=LOB.g;return LOB.pc!=null?LOB.pc:g?g.col:(PREF+1)%TC.length;}
-function lobPack(){const g=LOB.g,hm=LOB.hmode||{};return {lb:LOB.hosting,map:mapIx,h:[PNAME,PREF,PCMD,PSKIN],g:g?[g.nm,gCol(),g.cmd,g.rd?1:0,g.sk|0]:null,gt:g?g.tok:'',mo:hm.coop?[hm.bots,hm.diff]:0};}
+function lobPack(){const g=LOB.g,hm=LOB.hmode||{};return {lb:LOB.hosting,map:mapIx,h:[PNAME,PREF,PCMD,PSKIN],g:g?[g.nm,gCol(),g.cmd,g.rd?1:0,g.sk|0]:null,gt:g?g.tok:'',mo:hm.coop?[hm.bots,hm.diff]:0,cd:LOB.cd?1:0};}
 function lobState(force){if(!ROOM||!LOB.hosting||NET)return;const p=lobPack(),k=JSON.stringify(p),now=performance.now();if(k===LOB.lsk&&!(force&&now-(LOB.lsT||0)>700))return;LOB.lsk=k;LOB.lsT=now;ROOM.emit('hi',p).catch(()=>{});}
 function lobHostHi(m,d){const now=performance.now(),g=LOB.g;
  if(g&&g.peer!==m.peer&&now-g.t<6000){lobState(true);return;}
  const nw=!g||g.peer!==m.peer;if(nw)LOB.pc=null;else if((+d.col|0)!==g.col)LOB.pc=null;
  LOB.g={peer:m.peer,tok:typeof d.tk==='string'?d.tk.slice(0,12):'',nm:nmClean(d.nm),col:clamp(+d.col|0,0,TC.length-1),cmd:clamp(+d.cmd|0,0,CMD.length-1),sk:clamp(+d.sk|0,0,SKINS.length-1),rd:!!d.rd,t:now};
- if(nw){sfx('tap');toast((LOB.g.nm||'A player')+' joined your lobby');}
+ if(nw){sfx('join');toast((LOB.g.nm||'A player')+' joined your lobby');}
+ if(LOB.cd&&!LOB.g.rd)cdStop('Countdown stopped — '+(LOB.g.nm||'the other player')+' is not ready');
  lobState(true);renderMP();
  if(MPAUTO&&LOB.g&&LOB.hosting)lobStart(1);}
-function lobTick(){if(!LOB.hosting||NET)return;const g=LOB.g;if(g&&performance.now()-g.t>6500){LOB.g=null;toast((g.nm||'The other player')+' left the lobby');renderMP();}
+function lobTick(){if(!LOB.hosting||NET)return;const g=LOB.g;if(g&&performance.now()-g.t>6500){LOB.g=null;if(LOB.cd)cdStop('');toast((g.nm||'The other player')+' left the lobby');renderMP();}
  const pk=JSON.stringify([LOB.hosting,mapIx,PNAME,LOB.g?1:0]);if(pk!==LOB.prk){LOB.prk=pk;try{ROOM.presence({host:LOB.hosting,map:mapIx,nm:[PNAME],f:LOB.g?1:0}).catch(()=>{});}catch(e){}}
  lobState();}
-function lobStart(auto){const g=LOB.g;if(!LOB.hosting||!g){if(!auto)toast('Waiting for a player to join');return;}if(!g.rd&&!auto){toast('Waiting for '+(g.nm||'the other player')+' to tap Ready');return;}SKG=g.sk|0;startHost(g.peer,LOB.hosting,gCol(),g.cmd,g.nm);}
+function lobStart(auto){const g=LOB.g;if(!LOB.hosting||!g){if(!auto)toast('Waiting for a player to join');return;}if(!g.rd&&!auto){toast('Waiting for '+(g.nm||'the other player')+' to tap Ready');return;}if(auto){SKG=g.sk|0;startHost(g.peer,LOB.hosting,gCol(),g.cmd,g.nm);return;}if(LOB.cd)return;
+ const code=LOB.hosting;LOB.cd=performance.now();audioInit();sfx('mcount');lobState(true);renderMP();
+ LOB.cdT=setTimeout(()=>{LOB.cdT=0;const g2=LOB.g;if(!LOB.cd||LOB.hosting!==code||!g2||!g2.rd||NET){LOB.cd=0;return;}LOB.cd=0;SKG=g2.sk|0;startHost(g2.peer,code,gCol(),g2.cmd,g2.nm);},2300);}
+function cdStop(msg){if(LOB.cdT){clearTimeout(LOB.cdT);LOB.cdT=0;}LOB.cd=0;sxStop('mcount');if(msg)toast(msg);}
 function lobBye(){if(ROOM&&(LOB.hosting||LOB.joining)){try{ROOM.emit('hi',{bye:1}).catch(()=>{});}catch(e){}}}
 let SKG=0;
 function pRow(nm,col,cmd,tag,tc,sk){return '<div class="lbr" style="border-left-color:'+TC0[col]+'"><b>'+escH(nm)+'</b><em>'+escH(CMD[cmd]?CMD[cmd].n:'')+' · '+CN[col]+(sk?' · '+SKINS[sk].n:'')+'</em><span style="color:'+tc+'">'+tag+'</span></div>';}
@@ -5059,12 +5068,14 @@ function lobHostHtml(){const hm=LOB.hmode||{},g=LOB.g,cols=mkCols(hm.coop?[PREF,
  h+='<p class="lb">Your army color</p><div class="sws">'+swatches(PREF,'c')+'</div><p class="lb">'+(g?escH(g.nm||'Player 2')+'\'s':'The other player\'s')+' army color</p><div class="sws">'+swatches(cols[1],'pc')+'</div>';
  h+='<button class="mpb" data-q="inv">Invite a friend<small>Share a link, or tell them the code '+C+'</small></button>';
  if(LOB.inv)h+=LOB.inv==='show'?'<p class="mpnote">Copy this and send it:</p><input class="mpin" readonly value="'+escH(invText()+' '+invUrl(LOB.hosting))+'">':'<p class="mpnote" style="color:#7dffb0;margin:-2px 0 8px">'+escH(LOB.inv)+'</p>';
- const can=g&&g.rd;h+='<button class="mpb main'+(can?'':' off')+'" data-q="start">Start match<small>'+(can?'Everyone is ready':g?'Waiting for '+escH(g.nm||'the other player')+' to tap Ready':'Waiting for a player to join')+'</small></button>';
+ const can=g&&g.rd;h+=LOB.cd?'<button class="mpb main rdy" data-q="start">Match starting…<small>Get ready</small></button>':'<button class="mpb main'+(can?'':' off')+'" data-q="start">Start match<small>'+(can?'Everyone is ready':g?'Waiting for '+escH(g.nm||'the other player')+' to tap Ready':'Waiting for a player to join')+'</small></button>';
  h+='<button class="mpb" data-n="cancel">Close lobby</button><p class="mpnote">Pick the battlefield, your color and your commander below — both players see the changes.</p>';return h;}
 /* ---- lobby: guest side ---- */
 function lobGuestHi(m,d){if(!LOB.joining||d.lb!==LOB.joining||NET)return;const now=performance.now(),h=Array.isArray(d.h)?d.h:[],g=Array.isArray(d.g)?d.g:null;
  LOB.hp=m.peer;LOB.jl={map:clamp(+d.map|0,0,NSK-1),h:[nmClean(h[0]),clamp(+h[1]|0,0,TC.length-1),clamp(+h[2]|0,0,CMD.length-1),clamp(+h[3]|0,0,SKINS.length-1)],full:!!(g&&d.gt!==MYTOK),gc:g?clamp(+g[1]|0,0,TC.length-1):null,mo:Array.isArray(d.mo)?[clamp(+d.mo[0]|0,1,2),+d.mo[1]||1]:0,t:now};
  if(!LOB.jl.full&&LOB.jl.gc!=null&&LOB.jl.gc!==PREF&&now-(LOB.myc||0)>2500){PREF=LOB.jl.gc;try{localStorage.setItem('dl_col',''+PREF);}catch(e){}if(atMenu&&menuMode==='mp'&&mapIx===LOB.jl.map){showStart();return;}}
+ const inL=!!(g&&d.gt===MYTOK);if(inL&&LOB.jk!==LOB.joining){LOB.jk=LOB.joining;audioInit();sfx('join');}
+ if(d.cd&&inL&&!LOB.jcd){LOB.jcd=1;audioInit();sfx('mcount');}else if(!d.cd&&LOB.jcd){LOB.jcd=0;sxStop('mcount');}
  if(mapIx!==LOB.jl.map){mapIx=LOB.jl.map;if(atMenu&&menuMode==='mp'){showStart();return;}}renderMP();}
 function lobGuestHtml(){const L=LOB.jl,C=LOB.joining.toUpperCase(),now=performance.now(),live=LOB.open.find(o=>o.code===LOB.joining&&o.lv);let h='<p class="lb" style="margin-top:0">Lobby · code <b class="mpcode">'+C+'</b></p>';
  if(!L){h+='<p class="mpnote" style="margin-bottom:8px">'+(live?'This match has already started.':'Connecting to the host…')+'</p>';if(live)h+='<button class="mpb" style="border-color:#c9a0ff" data-q="w:'+LOB.joining+'">Watch it instead<small>See the battle live, without playing</small></button>';return h+'<button class="mpb" data-n="cancel">Cancel</button>';}
@@ -5073,7 +5084,7 @@ function lobGuestHtml(){const L=LOB.jl,C=LOB.joining.toUpperCase(),now=performan
  if(L.full)h+='<div class="lbr empty"><em>This match already has its second player. You can watch it once it starts.</em></div>';
  else{h+=pRow((PNAME||'You')+' (you)',cols[1],PCMD,LOB.rd?'Ready':'Not ready',LOB.rd?'#7dffb0':'#a8997a',PSKIN);
   h+='<p class="lb">Your army color</p><div class="sws">'+swatches(PREF,'c')+'</div>';
-  h+='<button class="mpb main'+(LOB.rd?' rdy':'')+'" data-q="rd">'+(LOB.rd?'Ready ✓<small>Waiting for the host to start · tap to undo</small>':'I\'m ready<small>Lets the host start the match</small>')+'</button>';}
+  h+='<button class="mpb main'+(LOB.rd?' rdy':'')+'" data-q="rd">'+(LOB.jcd&&LOB.rd?'Match starting…<small>Get ready · tap to stop</small>':LOB.rd?'Ready ✓<small>Waiting for the host to start · tap to undo</small>':'I\'m ready<small>Lets the host start the match</small>')+'</button>';}
  if(now-L.t>8000)h+='<p class="mpnote" style="color:#ffb39e">The host isn\'t answering…</p>';
  return h+'<button class="mpb" data-n="cancel">Leave lobby</button><p class="mpnote">Pick your color and commander below. The host picks the battlefield.</p>';}
 function lobSync(){if(LOB.hosting)lobState();else if(LOB.joining&&LOB.hiF){const k=JSON.stringify([PREF,PCMD,PNAME,LOB.rd,PSKIN]);if(k!==LOB.gk){LOB.gk=k;LOB.hiF();}}}
@@ -5159,7 +5170,7 @@ function lobbyWatch(){const bad=e=>{LOB.err=(e&&e.code)||'error';renderMP();if(N
    LOB.pres=pr;LOB.peersN=n;lobbyList();},bad);}catch(e){}
  try{if(ROOM.onConnection)ROOM.onConnection(()=>lobbyList(),()=>{});}catch(e){}
  setInterval(lobbyList,1500);}
-function lobbyReset(){if(LOB.spT){clearInterval(LOB.spT);LOB.spT=0;}LOB.spw=null;LOB.g=null;LOB.jl=null;LOB.rd=0;LOB.hp=null;LOB.hiF=null;LOB.inv='';LOB.lsk='';LOB.prk='';if(LOB.hiT){clearInterval(LOB.hiT);LOB.hiT=0;}if(LOB.adT){clearInterval(LOB.adT);LOB.adT=0;}LOB.hosting=null;LOB.joining=null;if(ROOM){try{ROOM.presence({host:null,map:null,co:null,df:null,f:null,nm:null}).catch(()=>{});}catch(e){}}}
+function lobbyReset(){if(LOB.spT){clearInterval(LOB.spT);LOB.spT=0;}LOB.spw=null;LOB.g=null;LOB.jl=null;LOB.rd=0;LOB.hp=null;LOB.hiF=null;LOB.inv='';LOB.lsk='';LOB.prk='';if(LOB.hiT){clearInterval(LOB.hiT);LOB.hiT=0;}if(LOB.adT){clearInterval(LOB.adT);LOB.adT=0;}LOB.hosting=null;LOB.joining=null;LOB.jk=null;LOB.jcd=0;if(LOB.cdT){clearTimeout(LOB.cdT);LOB.cdT=0;}LOB.cd=0;if(ROOM){try{ROOM.presence({host:null,map:null,co:null,df:null,f:null,nm:null}).catch(()=>{});}catch(e){}}}
 function mpForget(){try{localStorage.removeItem('dl_mp');}catch(e){}}
 function mpSaved(){try{const o=JSON.parse(localStorage.getItem('dl_mp'));if(o&&/^[a-z0-9]{4}$/.test(o.code)&&Date.now()-o.t<3*3600e3)return o.code;}catch(e){}return null;}
 function linkDown(){try{return !!(ROOM&&ROOM.connected&&!ROOM.connected());}catch(e){return false;}}
@@ -6733,7 +6744,7 @@ function campBegin(){const C=G.cp,def=CAMP[C.i];CM=campM();CGOT=[];RAILC=null;
  cam.z=clamp(Math.min(VW,VH)/480,.6,1.5);if(s)centerOn(s[0],s[1]);else if(u)centerOn(u.x,u.y);updFog();campHud(true);}
 function campErr(e){if(!G.cp.err){G.cp.err=String(e&&e.message||e);try{console.error('campaign script:',e);}catch(x){}}}
 function campObjMsg(id,st){const C=G.cp,def=CAMP[C.i],o=def.obj.concat(def.side||[]).find(q=>q.id===id),side=C.o[id].side;if(!o||C.t<.3)return;
- toast((st===1?(side?'Side objective complete: ':'Objective complete: '):st===2?(side?'Side objective lost: ':'Objective failed: '):(side?'Side objective: ':'New objective: '))+o.n);sfx(st===2?'alert':'done');if(st!==2)vox(st===1?(side?'side':'obj'):'newobj');campHud(true);}
+ toast((st===1?(side?'Side objective complete: ':'Objective complete: '):st===2?(side?'Side objective lost: ':'Objective failed: '):(side?'Side objective: ':'New objective: '))+o.n);sfx(st===2?'alert':'done');vox(st===2?'objf':st===1?(side?'side':'obj'):'newobj');campHud(true);}
 function campSay(who,txt){const C=G.cp;C.say.push([Math.floor(C.t),who,txt]);if(C.say.length>40)C.say.shift();C.sq.push([who,txt]);}
 function campComms(dt){const C=G.cp,el=$('comms');if(C.sT>0){C.sT-=dt;if(C.sT<=0){el.style.opacity=0;}}
  if(C.sT<=0&&C.sq.length){const m=C.sq.shift();el.innerHTML='<b>'+cesc(m[0])+'</b>'+cesc(m[1]);el.style.opacity=1;C.sT=clamp(2.6+m[1].length*.055,3.5,9);sfx('tap');if(sndM===0){anT=voT=performance.now();voxThen(()=>{if(sndM===0&&G&&G.cp===C&&!G.over)speak(m[1],1.03,m[0]==='Command'?.8:1.05,.9);});}}}
