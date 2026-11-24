@@ -4138,7 +4138,8 @@ function exec(T,c){if(!G||G.over||!c||typeof c!=='object')return;const ids=Array
 function clampCam(){const vw=VW/cam.z,vh=VH/cam.z;if(ISO&&!V3){const x0=-H*IK,x1=W*IK,y1=(W+H)*IK*.5;cam.x=vw>=x1-x0+160?(x0+x1-vw)/2:clamp(cam.x,x0-80,x1-vw+80);cam.y=vh>=y1+PH+140?(y1-vh)/2:clamp(cam.y,-90/cam.z,y1-vh+(PH+40)/cam.z);return;}cam.x=vw>=W+160?(W-vw)/2:clamp(cam.x,-80,W-vw+80);cam.y=vh>=H+PH+140?(H-vh)/2:clamp(cam.y,-90/cam.z,H-vh+(PH+40)/cam.z);}
 function centerOn(x,y){cam.x=pX(x,y)-VW/cam.z/2;cam.y=pY(x,y)-VH/cam.z/2;clampCam();}
 function zoomAt(sx,sy,z){if(V3){const mx_=cam.x+VW/cam.z/2,my_=cam.y+VH/cam.z/2;cam.z=clamp(z,.4,2.2);cam.x=mx_-VW/cam.z/2;cam.y=my_-VH/cam.z/2;clampCam();return;}const wx=cam.x+sx/cam.z,wy=cam.y+sy/cam.z;cam.z=clamp(z,.4,2.2);cam.x=wx-sx/cam.z;cam.y=wy-sy/cam.z;clampCam();}
-function resize(){VW=window.innerWidth;VH=window.innerHeight;F3=Math.max(620,Math.min(1250,VH*1.18));{const dp=window.devicePixelRatio||1,px=VW*VH;DPR=GQ===0?Math.max(.7,Math.min(1,dp,Math.sqrt(8e5/px))):Math.max(1,Math.min(dp,[1,2,3,3][GQ],Math.sqrt([8e5,2.8e6,5.2e6,9.5e6][GQ]/px)));}if(GQ>0&&DRS<1)DPR=Math.max(1,DPR*DRS);cv.width=Math.round(VW*DPR);cv.height=Math.round(VH*DPR);if(G){lastHtml='';panel();}clampCam();try{if(DIR&&DIR.cam&&G&&G.demo){if(DIR.swk&&DIR.sel)dirDemo(DIR.sel[0],DIR.sel[1]);else dirCam();}}catch(e){}}
+let RZK='',RZQ=0;
+function resize(){VW=window.innerWidth;VH=window.innerHeight;F3=Math.max(620,Math.min(1250,VH*1.18));{const dp=window.devicePixelRatio||1,px=VW*VH;DPR=GQ===0?Math.max(.7,Math.min(1,dp,Math.sqrt(8e5/px))):Math.max(1,Math.min(dp,[1,2,3,3][GQ],Math.sqrt([8e5,2.8e6,5.2e6,9.5e6][GQ]/px)));}if(GQ>0&&DRS<1)DPR=Math.max(1,DPR*DRS);{const w=Math.round(VW*DPR),h=Math.round(VH*DPR),k=VW+'x'+VH;if(cv.width!==w)cv.width=w;if(cv.height!==h)cv.height=h;if(G&&k!==RZK){lastHtml='';panel();}RZK=k;}clampCam();try{if(DIR&&DIR.cam&&G&&G.demo){if(DIR.swk&&DIR.sel)dirDemo(DIR.sel[0],DIR.sel[1]);else dirCam();}}catch(e){}}
 let toastT=0;function toast(m){const t=$('toast');t.textContent=curS(m);t.style.opacity=1;toastT=2.6;}
 /* where a world point at height z lands on the screen, in CSS pixels, with pixels per world unit there */
 function w2s(x,y,z){if(V3){const p=PP(x,y,z||0);return [p[0],p[1],p[2]];}return [(pX(x,y)-cam.x)*cam.z,(pY(x,y)-(ISO?(z||0):0)-cam.y)*cam.z,cam.z];}
@@ -5437,11 +5438,11 @@ function clientTick(dt){const N=NET,k=Math.min(1,dt*10),pn=performance.now();G.t
 /* ---------- loop & screens ---------- */
 let lastT=0,uiT=0,speed=1;
 let DRS=1,DRL=0;const DRSL=[1,.85,.72,.6],DRT={ema:16.7,hi:0,lo:0,cool:0,G:null};
-function drsApply(){DRS=DRSL[DRL];DRT.hi=DRT.lo=0;DRT.cool=3;ground=null;resize();}
+function drsApply(){DRS=DRSL[DRL];DRT.hi=DRT.lo=0;DRT.cool=3;resize();}
 function drsTick(ms){if(DRT.G!==G){DRT.G=G;DRT.ema=16.7;DRT.hi=DRT.lo=0;if(DRL){DRL=0;drsApply();DRT.cool=0;}}
  if(!G||G.over||(paused&&!NET)||G.demo||GQ===0||document.hidden||!(ms>0)){DRT.hi=DRT.lo=0;return;}ms=Math.min(ms,250);DRT.ema+=(ms-DRT.ema)*.08;const s=ms/1000;if(DRT.cool>0){DRT.cool-=s;return;}
- if(DRT.ema>38){DRT.hi+=s;DRT.lo=0;if(DRT.hi>2&&DRL<DRSL.length-1){DRL++;drsApply();}}
- else if(DRL>0&&DRT.ema*Math.pow(DRSL[DRL-1]/DRSL[DRL],2)<30){DRT.lo+=s;DRT.hi=0;if(DRT.lo>6){DRL--;drsApply();}}
+ if(DRT.ema>38){DRT.hi+=s;DRT.lo=0;if(DRT.hi>2&&DRL<DRSL.length-1){if(DRT.upT&&performance.now()-DRT.upT<30000)DRT.upW=Math.min(60,(DRT.upW||6)*2);DRL++;drsApply();}}
+ else if(DRL>0&&DRT.ema*Math.pow(DRSL[DRL-1]/DRSL[DRL],2)<30){DRT.lo+=s;DRT.hi=0;if(DRT.lo>(DRT.upW||6)){DRL--;DRT.upT=performance.now();drsApply();}}
  else{DRT.hi=Math.max(0,DRT.hi-s);DRT.lo=Math.max(0,DRT.lo-s);}}
 let ATM=null;function frame(t){requestAnimationFrame(frame);drsTick(t-lastT);{const m=!G&&!!atMenu;if(m!==ATM){ATM=m;document.body.classList.toggle('atmenu',m);}}const dt=Math.min(.05,(t-lastT)/1000||0);lastT=t;
  if(G&&(!paused||NET)&&!G.over&&!document.hidden){
@@ -5733,7 +5734,7 @@ function miniGo(e){if(!G)return;const r=mini.getBoundingClientRect();centerOn((e
 mini.addEventListener('pointerdown',e=>{try{mini.setPointerCapture(e.pointerId);}catch(_){}mini._d=true;miniGo(e);});
 mini.addEventListener('pointermove',e=>{if(mini._d)miniGo(e);});
 mini.addEventListener('pointerup',()=>{mini._d=false;});mini.addEventListener('pointercancel',()=>{mini._d=false;});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&G&&!G.over)wake(true);if(document.hidden&&canSave())saveGame('auto',true);});window.addEventListener('pagehide',()=>{if(canSave())saveGame('auto',true);});window.addEventListener('resize',resize);window.addEventListener('orientationchange',()=>setTimeout(resize,250));document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&G&&!G.over)wake(true);if(document.hidden&&canSave())saveGame('auto',true);});window.addEventListener('pagehide',()=>{if(canSave())saveGame('auto',true);});window.addEventListener('resize',()=>{if(RZQ)return;RZQ=1;requestAnimationFrame(()=>{RZQ=0;resize();});});window.addEventListener('orientationchange',()=>setTimeout(resize,250));document.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---- title screen: a dusk dune scene on its own canvas; it stops drawing once dismissed ---- */
 const TITLE={on:false,cv:null,c:null,t:0,last:0,dust:null,w:0,h:0};
