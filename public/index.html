@@ -368,7 +368,7 @@ details.opts p.lb:first-of-type{margin-top:2px}
 .segt button{flex:1;padding:10px 4px;border-radius:9px;background:none;border:0;color:#a8997a;font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}.segt button.on{background:#ffc247;color:#1b1407}
 .howto ul{padding-left:18px;font-size:13.5px;line-height:1.5;color:#e6dcc4}.howto li{margin-bottom:9px}
 .hostr{display:flex;gap:8px;margin-bottom:2px}.hostr button{flex:1;padding:14px 8px;border-radius:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:14px;background:#ffc247;color:#1b1407;border:0;box-shadow:0 4px 0 #a86a10}
-.hostr button.co{background:#1d7445;color:#fff;box-shadow:0 4px 0 #0f4a2a}.hostr small{display:block;font-size:11px;text-transform:none;letter-spacing:0;font-weight:600;opacity:.8;margin-top:2px}
+.hostr button.co{background:#1d7445;color:#fff;box-shadow:0 4px 0 #0f4a2a;display:block;gap:0;align-items:initial;padding:14px 8px;font-size:14px}.hostr button.co small{color:inherit;font-size:11px}.hostr small{display:block;font-size:11px;text-transform:none;letter-spacing:0;font-weight:600;opacity:.8;margin-top:2px}
 p.lb.sep{margin-top:24px!important;padding-top:14px;border-top:1px solid #3d311c}.mpnote.mpst{font-size:11.5px!important;opacity:.75;margin-top:10px!important}.mpnote.empty{background:#221c12;border:1px dashed #4a3c24;border-radius:10px;padding:12px;margin:0 0 4px!important}
 .pz h1{margin-bottom:6px!important}.pzb{display:flex;flex-direction:column;gap:9px;margin:16px 0}
 .pzb button{padding:16px;border-radius:12px;font-weight:900;font-size:16px;letter-spacing:.07em;text-transform:uppercase;background:#33291a;border:1px solid #6b5631;color:#f3ead8}
@@ -2049,7 +2049,7 @@ function seaSlip(b){if(!seaOn())return;seaBuild();const e=seaFree(b.x,b.y,14);if
 const DIFFS=[{d:.6,k:'e',n:'Easy'},{d:.8,k:'m',n:'Moderate'},{d:1,k:'n',n:'Normal'},{d:1.2,k:'t',n:'Tough'},{d:1.4,k:'h',n:'Hard'},{d:2,k:'w',n:'War is Hell'}],DVAL=DIFFS.map(q=>q.d);
 const dOf=d=>{d=+d||1;let b=DIFFS[2],bd=9;for(const q of DIFFS){const e=Math.abs(q.d-d);if(e<bd){bd=e;b=q;}}return b;};
 const AIL={e:{wave:4,first:300,grow:1,maxTur:2,mult:.5,harvGoal:4},m:{wave:4,first:230,grow:1.5,maxTur:3,mult:.7,harvGoal:4},n:{wave:5,first:170,grow:2,maxTur:5,mult:1,harvGoal:4},
- t:{wave:5,first:150,grow:2,maxTur:5,mult:1.15,harvGoal:5},h:{wave:6,first:130,grow:2,maxTur:5,mult:1.3,harvGoal:5},w:{wave:8,first:100,grow:3,maxTur:7,mult:2.1,harvGoal:6,hell:1,all:1}};
+ t:{wave:5,first:150,grow:2,maxTur:5,mult:1.15,harvGoal:5,iq:1},h:{wave:6,first:130,grow:2,maxTur:5,mult:1.3,harvGoal:5,iq:2},w:{wave:8,first:100,grow:3,maxTur:7,mult:2.1,harvGoal:6,hell:1,all:1,iq:3}};
 /* War is Hell's extra kit: units that do a job instead of joining the waves; buildings it keeps one of; the five super weapons in the order it raises them */
 const AIJOB={scout:1,mcc:1,hacker:1,lift:1,aerie:1},AIEXTRA=['arm','bay','mast','bul','bow','ref','red','flak'],AISW=['rail','vortex','rime','quake','astra'],
  AIPERK=['barrage','drill','fast','hammer','mark','overdrive','guard','emp','march','plate','drop','bonds','veins','supply','surge','interest','doctrine','pulse','wind','broad','salvo','hulls','coast'];
@@ -3705,11 +3705,12 @@ function updUnit(u,dt){const d=UD[u.type];if(d.giant){cxTick(u,dt);igTick(u,dt);
  if(!d.dmg){u.ta=u.a;if(d.cap&&u.tg){if(u.tg.hp<=0||!foe(u.tg.team,u.team))u.tg=null;else{goTo(u,d,u.tg,false,dt);if(gap(u,u.tg)<u.r+8)capture(u,u.tg);}}else if(u.mv)goTo(u,d,u.mv,true,dt);return;}
  u.cdT-=dt;u.acq-=dt;
  if(u.tg&&u.tg.hp<=0)u.tg=null;if(u.near&&u.near.hp<=0)u.near=null;
- if(u.acq<=0){u.acq=.25+Math.random()*.15;u.near=d.big?bigPick(u,d):nearestEnemy(u,u.rg+110,d);}
+ if(u.acq<=0){u.acq=.25+Math.random()*.15;u.near=d.big?bigPick(u,d):(AIQ[u.team]>=1&&!u.tg)?aiPick(u,d):nearestEnemy(u,u.rg+110,d);}
  let ft=null;if(u.tg&&inRange(u,u.tg,d))ft=u.tg;else if(u.near&&inRange(u,u.near,d))ft=u.near;
  if(u.tg){if(gap(u,u.tg)>u.rg-4)goTo(u,d,u.tg,false,dt);}
  else if(u.mv&&!(u.amove&&u.near))goTo(u,d,u.mv,true,dt);
  else if(u.near&&!ft&&!u.hold&&gap(u,u.near)>u.rg-4)goTo(u,d,u.near,false,dt);
+ if(ft&&!u.tg&&u.cdT>.3&&AIQ[u.team]>=3&&!d.big&&!u.sea&&!u.hold&&!u.raid&&!u.out)aiKite(u,d,ft,dt);
  if(ft&&u.cdT<=0)fire(u,ft,d);
  u.ta=ft?Math.atan2(ft.y-u.y,ft.x-u.x)-(u.type==='zero'?zrOff(u,ft):0):d.big&&u.ta!=null?u.ta+angN(u.a-u.ta)*Math.min(1,dt*1.2):u.a;}
 function qTime(t,T){return t[0]==='!'?RD[t.slice(1)].time:UD[t].time*cmM(T,'time',ucat(UD[t]))*(UD[t].sea?[1,.87,.8,.74][lv(T,'slips')]:1);}
@@ -3769,7 +3770,7 @@ function updFog(){if(NET&&NET.spec){fogV.fill(1);fogE.fill(1);for(const b of G.b
 /* ---------- enemy AI ---------- */
 function tryQueue(b,t){const mk=BD[b.type].makes;if(!mk||mk.indexOf(t)<0)return false;if(t[0]==='!'){const k=t.slice(1);if(G.up[b.team][k]||G.upQ[b.team][k])return false;}else{if(banned(b.team,t))return false;const r=UD[t].req;if(r&&!has(b.team,r))return false;if(UD[t].pk&&lv(b.team,UD[t].pk)<UD[t].pl)return false;if(UD[t].max&&unitCount(b.team,t)>=UD[t].max)return false;if(UD[t].ammo&&hangN(b)&&hangRoom(b)<1)return false;}
  const c=qCost(t,b.team);if(G.money[b.team]<c||b.queue.length>=6)return false;G.money[b.team]-=c;b.queue.push(t);if(t[0]==='!')G.upQ[b.team][t.slice(1)]=true;return true;}
-function aiBuild(T,type,mine){if(G.money[T]<bCost(T,type))return;const f=FP[type];
+function aiBuild(T,type,mine){if(G.money[T]<bCost(T,type))return;const f=FP[type];if(AIQ[T]){const sp=aiDefSpot(T,type,mine);if(sp){G.money[T]-=bCost(T,type);addBld(T,type,sp[0],sp[1],false);return;}}
  for(let i=0;i<(f?90:24);i++){const o=mine[(Math.random()*mine.length)|0],a=rnd(0,6.28),r=f?rnd(o.r+70,292):rnd(o.r+BD[type].r+30,250),x=o.x+Math.cos(a)*r,y=o.y+Math.sin(a)*r;
   if(canPlace(T,type,x,y)){G.money[T]-=bCost(T,type);addBld(T,type,x,y,false);return;}}}
 function aiBuildBy(T,type,o){if(G.money[T]<bCost(T,type))return;for(let i=0;i<24;i++){const a=rnd(0,6.28),r=rnd(o.r+BD[type].r+18,190),x=o.x+Math.cos(a)*r,y=o.y+Math.sin(a)*r;if(canPlace(T,type,x,y)){G.money[T]-=bCost(T,type);addBld(T,type,x,y,false);return;}}}
@@ -3834,7 +3835,110 @@ function aiTx(A,T,us,pb,hub){if(!pb.length||!hub||G.t<A.first)return;
  else if(X.s===3){if(tr.cargo.length&&G.t-X.t<20){if(G.t-(X.u||0)>4&&(tr.sea?!!landing(tr):!inLake(tr.x,tr.y,4)&&!inRiver(tr.x,tr.y,4))){X.u=G.t;exec(T,{k:'unload',ids:[tr.id]});}continue;}
   for(const u of G.units)if(u.team===T&&u.txJob===tr.id&&!u.out){u.txJob=0;u.wave=true;u.amove=true;let t=pb[0],b2=1e9;for(const p of pb){const d=dist(p,u);if(d<b2){b2=d;t=p;}}u.mv={x:t.x+rnd(-30,30),y:t.y+rnd(-30,30)};}
   tr.mv=tr.sea?null:{x:hub.x+rnd(-90,90),y:hub.y+rnd(-90,90)};X.goal=null;X.s=0;X.t=G.t;}}}
-function aiThink(A){const T=A.T,mine=G.blds.filter(b=>b.team===T);if(!mine.length)return;
+/* ---------- smarter bots: Tough (iq 1), Hard (iq 2), War is Hell (iq 3); Easy to Normal play exactly as before ----------
+   iq1: builds counters to the enemy army, gathers each wave before it sets off, picks a weakly defended but valuable target,
+        sends badly hurt vehicles back to a Service Bay
+   iq2: also focus-fires (wounded, dangerous units and Harvesters first), pulls a wave back from a fight it is losing,
+        raids Harvesters, recalls the army when the base is overrun
+   iq3: also splits a big wave to hit two places at once, raids sooner and with more units, and judges fights more carefully */
+const AIQ=[],AIX={};
+const aiCls=u=>u.k!=='u'?1:(u.air&&!u.gr)?2:(UD[u.type].veh||UD[u.type].sea)?1:0;
+function aiMul(d,c){if(!d||!d.dmg)return 0;return c===2?(d.aa?(d.vsAir==null?1:d.vsAir):0):d.noGround?0:c===1?(d.vsVeh==null?1:d.vsVeh):(d.vsInf==null?1:d.vsInf);}
+const aiVal=u=>(UD[u.type].cost||300)*Math.max(.15,u.hp/u.max);
+/* fighting strength near a spot: own units, or enemy units plus enemy guns that reach it */
+function aiStr(x,y,r,T,en){let s=0;for(const u of G.units){if(u.hp<=0||u.out||(en?!foe(u.team,T):u.team!==T)||!UD[u.type].dmg||UD[u.type].hv)continue;const dx=u.x-x,dy=u.y-y;if(dx>r||dx<-r||dy>r||dy<-r)continue;if(dx*dx+dy*dy<r*r)s+=aiVal(u);}
+ if(en)for(const b of G.blds){if(b.hp<=0||!foe(b.team,T)||b.built===false)continue;const d=BD[b.type];if(!d||!d.dmg||d.noGround)continue;if(Math.hypot(b.x-x,b.y-y)<r*.6+(d.range||0))s+=(d.cost||500)*b.hp/b.max*1.5;}return s;}
+function aiPre(A,T){const c=[0,0,0];for(const u of G.units)if(u.hp>0&&foe(u.team,T)&&UD[u.type].dmg&&!UD[u.type].hv)c[aiCls(u)]+=aiVal(u);A.comp=c;}
+/* choose what to build from a pool, leaning towards what hurts the enemy's army most; the harder the bot, the stronger the lean */
+function aiCounter(A,T,pool){const c=A.comp||[0,0,0],tot=c[0]+c[1]+c[2];if(tot<400)return pool[(Math.random()*pool.length)|0];
+ const eff=pool.map(t=>{const d=UD[t];return d&&d.dmg?.12+(c[0]*aiMul(d,0)+c[1]*aiMul(d,1)+c[2]*aiMul(d,2))/tot:-1;});
+ let sum=0,n=0;for(const e of eff)if(e>=0){sum+=e;n++;}const sup=n?sum/n:1,p=A.iq+1;let W=0;
+ const w=eff.map(e=>{const v=Math.pow(e<0?sup:e,p);W+=v;return v;});let r=Math.random()*W;for(let i=0;i<pool.length;i++){r-=w[i];if(r<=0)return pool[i];}return pool[pool.length-1];}
+/* a target for a wave: worth a lot, lightly defended, not too far */
+const AITV={hq:3,fac:2.2,air:2,lab:2,bar:1.6,yard:2,nbase:2.2,dock:1.5,bay:1.4,arm:1.5,bea:1.8};
+function aiTarget(A,T,pb,from,avoid){let best=null,bs=-1;if(AIX.tgt){let bd=1e9;for(const b of pb){const d=Math.hypot(b.x-from.x,b.y-from.y);if(d<bd&&(!avoid||Math.hypot(b.x-avoid.x,b.y-avoid.y)>=700)){bd=d;best=b;}}return best||pb[0];}const land=pb.filter(b=>sameLand(b,from)),L=land.length?land:pb;
+ for(const b of L){if(avoid&&Math.hypot(b.x-avoid.x,b.y-avoid.y)<700)continue;const d=BD[b.type]||{};const v=SWK.indexOf(b.type)>=0?4:AITV[b.type]||(d.dmg?.8:1);
+  const s=v*1000/(500+aiStr(b.x,b.y,420,T,true))/(1+Math.hypot(b.x-from.x,b.y-from.y)/(A.iq>=2?2600:1800));if(s>bs){bs=s;best=b;}}
+ return best||L[0];}
+/* a new wave first gathers on a rally point in front of the base */
+function aiLaunch(A,T,sq,t,mine){const hub=mine.find(b=>b.type==='hq')||mine[0];let cx=0,cy=0;for(const u of sq){cx+=u.x;cy+=u.y;}cx/=sq.length;cy/=sq.length;
+ const dx=t.x-hub.x,dy=t.y-hub.y,L=Math.hypot(dx,dy)||1,k=Math.min(520,L*.3);let rx=hub.x+dx/L*k,ry=hub.y+dy/L*k;
+ try{if(navBlk(rx,ry)||!sameLand({x:rx,y:ry},hub)){rx=cx;ry=cy;}}catch(e){rx=cx;ry=cy;}
+ const id=(A.gid=(A.gid|0)+1);A.grp={id,t,go:0,t0:G.t,rx,ry};
+ for(const u of sq){u.wave=true;u.wg=id;u.fl=0;u.amove=true;u.tg=null;u.mv={x:rx+rnd(-60,60),y:ry+rnd(-60,60)};}if(AIX.gather)aiGo(A,T,sq,[t]);}
+function aiGo(A,T,ms,pb){const g=A.grp;g.go=1;g.tg0=G.t;const t=g.t&&g.t.hp>0?g.t:aiTarget(A,T,pb,{x:g.rx,y:g.ry},null);g.t=t;let main=ms;
+ if(A.iq>=3&&!AIX.split&&ms.length>=12){const t2=aiTarget(A,T,pb,{x:g.rx,y:g.ry},t);if(t2&&t2!==t&&Math.hypot(t2.x-t.x,t2.y-t.y)>=700){const fast=ms.slice().sort((a,b)=>(UD[b.type].sp||0)-(UD[a.type].sp||0)),n=Math.round(ms.length*.3);
+   g.t2=t2;for(const u of fast.slice(0,n)){u.fl=1;u.mv={x:t2.x+rnd(-40,40),y:t2.y+rnd(-40,40)};u.amove=true;u.tg=null;}main=fast.slice(n);}}
+ for(const u of main){u.mv={x:t.x+rnd(-50,50),y:t.y+rnd(-50,50)};u.amove=true;u.tg=null;}}
+function aiWaveTick(A,T,army,pb,mine){const iq=A.iq,hub=mine.find(b=>b.type==='hq')||mine[0];
+ /* badly hurt vehicles drive back to a Service Bay and rejoin when repaired */
+ const bay=AIX.rtr?null:mine.find(b=>b.type==='bay'&&b.built!==false);
+ for(const u of army){const d=UD[u.type];
+  if(u.rtr){if(!bay||u.hp>=u.max*.92){u.rtr=0;if(u.mv&&bay&&dist(u.mv,bay)<130)u.mv=null;}else if(!u.mv||dist(u.mv,bay)>130){u.mv={x:bay.x+rnd(-70,70),y:bay.y+rnd(-70,70)};u.amove=false;}continue;}
+  if(bay&&d.veh&&!u.air&&!u.sea&&d.dmg&&!d.hv&&u.hp<u.max*(iq>=3?.35:.28)&&dist(u,bay)>220&&!u.capJob&&!u.lairJob&&!u.fortJob&&!u.salJob){u.rtr=1;u.wave=false;u.wg=0;u.raid=0;u.tg=null;u.amove=false;u.mv={x:bay.x+rnd(-70,70),y:bay.y+rnd(-70,70)};}}
+ const g=A.grp;
+ if(g){const ms=army.filter(u=>u.wave&&u.wg===g.id);
+  if(!ms.length)A.grp=null;
+  else if(!g.go){let n=0;for(const u of ms)if(Math.hypot(u.x-g.rx,u.y-g.ry)<260)n++;
+   if(n>=ms.length*.8||G.t-g.t0>(iq>=2?32:24))aiGo(A,T,ms,pb);else for(const u of ms)if(!u.mv&&!u.tg&&!u.near)u.mv={x:g.rx+rnd(-60,60),y:g.ry+rnd(-60,60)};}
+  else{if(!g.t||g.t.hp<=0){A.nRet=0;let cx=0,cy=0;for(const u of ms){cx+=u.x;cy+=u.y;}g.t=aiTarget(A,T,pb,{x:cx/ms.length,y:cy/ms.length},null);}
+   for(const u of ms)if(!u.mv&&!u.tg&&!u.near&&!u.ht&&g.t){const tt=u.fl&&g.t2&&g.t2.hp>0?g.t2:g.t;u.mv={x:tt.x+rnd(-40,40),y:tt.y+rnd(-40,40)};u.amove=true;}
+   /* losing the fight: fall back, regroup with the next wave (at most twice in a row, so it can never stall for good) */
+   if(iq>=2&&!AIX.ret&&G.t-g.tg0>8&&(A.nRet|0)<2&&G.t-(g.chk||0)>=2){g.chk=G.t;let cx=0,cy=0;for(const u of ms){cx+=u.x;cy+=u.y;}cx/=ms.length;cy/=ms.length;
+    const S=aiStr(cx,cy,520,T,false),E=aiStr(cx,cy,560,T,true);
+    if(E>400&&E>S*(iq>=3?1.35:1.6)){A.nRet=(A.nRet|0)+1;A.retT=G.t;for(const u of ms){u.wave=false;u.wg=0;u.fl=0;u.tg=null;u.amove=false;u.mv={x:hub.x+(g.rx-hub.x)*.6+rnd(-80,80),y:hub.y+(g.ry-hub.y)*.6+rnd(-80,80)};}A.grp=null;}}}}
+ /* Harvester raids by a few fast units */
+ if(iq>=2&&!AIX.raid&&G.t>(iq>=3?200:260)){const rs=army.filter(u=>u.raid);
+  if(!rs.length){if(G.t>(A.raidT||0)){let h=null,hs=1e9;for(const e of G.units)if(foe(e.team,T)&&e.hp>0&&UD[e.type].hv&&!e.out&&!e.air&&sameLand(e,hub)){const s=aiStr(e.x,e.y,330,T,true)+dist(e,hub)*.08;if(s<hs){hs=s;h=e;}}
+    const fr=army.filter(u=>!u.wave&&!u.capJob&&!u.salJob&&!u.lairJob&&!u.fortJob&&!u.rtr&&!u.air&&!u.sea&&UD[u.type].dmg&&(UD[u.type].sp||0)>=75&&aiMul(UD[u.type],1)>0);
+    if(h&&hs<1100&&fr.length>=3){for(const u of fr.slice(0,iq>=3?5:4)){u.raid=1;u.tg=h;u.mv=null;u.amove=true;}A.raidT=G.t+(iq>=3?70:100);}else A.raidT=G.t+20;}}
+  else for(const u of rs){if(u.hp<u.max*.4){u.raid=0;u.tg=null;u.mv={x:hub.x+rnd(-80,80),y:hub.y+rnd(-80,80)};u.amove=false;continue;}
+   if(!u.tg||u.tg.hp<=0){let h=null,hd=1100;for(const e of G.units)if(foe(e.team,T)&&e.hp>0&&UD[e.type].hv&&!e.out){const d=dist(e,u);if(d<hd){hd=d;h=e;}}
+    if(h)u.tg=h;else{u.raid=0;u.tg=null;u.mv={x:hub.x+rnd(-80,80),y:hub.y+rnd(-80,80)};u.amove=true;}}}}
+ /* the base is being overrun: call the waves home */
+ if(iq>=2&&!AIX.rec&&A.alP&&G.t-A.alP.t<2&&G.t-(A.recT||0)>40){const E=aiStr(A.alP.x,A.alP.y,550,T,true),H=aiStr(A.alP.x,A.alP.y,700,T,false);
+  if(E>500&&E>H*1.2){const ws=army.filter(u=>u.wave&&!u.raid&&!u.near);if(ws.length){A.recT=G.t;for(const u of ws){u.wave=false;u.wg=0;u.fl=0;u.tg=null;u.amove=true;u.mv={x:A.alP.x+rnd(-60,60),y:A.alP.y+rnd(-60,60)};}if(A.grp&&!army.some(u=>u.wave&&u.wg===A.grp.id))A.grp=null;}}}}
+/* target choice for one bot unit: the best target in reach, not just the nearest. Tough weighs only how well it hurts each target;
+   Hard and War is Hell also go for wounded and dangerous units, Harvesters, and spread their fire so they do not overkill */
+function aiPick(u,d){const R=u.rg+110,mn=d.min||0,me=aiCls(u),iq=AIQ[u.team]|0,cur=u.near&&u.near.hp>0?u.near:null;let best=null,bs=-1,cs=-1;
+ const look=e=>{if(!foe(e.team,u.team)||e.hp<=0||!canHit(d,e))return;const q=Math.hypot(e.x-u.x,e.y-u.y);if(q>=R)return;const g=q-(e.r||0);if(g<mn)return;
+  const ed=UD[e.type],m=aiMul(d,aiCls(e));if(m<=0)return;const th=ed.dmg?ed.dmg/(ed.cd||1)*aiMul(ed,me):0;
+  const pd=e.pdT===G.t||G.t-(e.pdT||-9)<.6?(e.pd||0):0,hl=e.hp-pd;
+  let s;if(iq<2)s=m*(g<=u.rg?1:.3)*(1.2-q/R*.4);
+  else{s=m*(1+th/10)/(Math.max(hl,e.hp*.15)+60)*(hl<=0?.35:1)*(g<=u.rg?1:.3)*(1.2-q/R*.4);if(ed.hv)s*=1.5;else if(!ed.dmg)s*=iq>=3?1.25:1;}
+  if(e===cur)cs=s;if(s>bs){bs=s;best=e;}};
+ if(NEG.G===G&&NEG.t===G.t&&R<=NEG.max){const C=NEG.C,gw=NEG.gw,c0=Math.max(0,((u.x-R-NEG.pad)/C)|0),c1=Math.min(gw-1,((u.x+R+NEG.pad)/C)|0),r0=Math.max(0,((u.y-R-NEG.pad)/C)|0),r1=Math.min(NEG.gh-1,((u.y+R+NEG.pad)/C)|0);
+  for(let gy=r0;gy<=r1;gy++)for(let gx=c0;gx<=c1;gx++){const L=NEG.cell[gy*gw+gx];if(!L)continue;for(const i of L)look(NEG.u[i]);}for(let i=NEG.n;i<G.units.length;i++)look(G.units[i]);}
+ else for(const e of G.units)look(e);
+ if(best){if(cur&&cs>0&&cs*1.35>=bs)return cur;
+  /* expected damage already on its way, so the next units spread to other targets instead of overkilling */
+  if(best.pdT==null||G.t-best.pdT>=.6)best.pd=0;best.pdT=G.t;best.pd=(best.pd||0)+d.dmg*aiMul(d,aiCls(best))*(d.cd&&d.cd<1?1/d.cd:1);return best;}
+ if(d.noGround)return null;
+ /* no units in reach: guns that can shoot back first, then the weakest building */
+ let bb=null,bbs=-1;for(const b of G.blds){if(!foe(b.team,u.team)||b.hp<=0)continue;const q=Math.hypot(b.x-u.x,b.y-u.y)-b.r;if(q>=R||q<mn)continue;const bd=BD[b.type]||{};
+  const s=((bd.dmg&&!bd.noGround)?3:1)/(b.hp+250)*(q<=u.rg?1:.3);if(s>bbs){bbs=s;bb=b;}}
+ return bb;}
+/* War is Hell: a unit that outranges what it is shooting steps back while it reloads, staying out of the enemy's reach */
+function aiKite(u,d,ft,dt){const fd=ft.k==='u'?UD[ft.type]:BD[ft.type];if(!fd||!fd.dmg||(ft.k==='u'?!canHit(fd,u):fd.noGround))return;const er=ft.k==='u'?(ft.rg||fd.range||0):(fd.range||0);if(!er||er>u.rg-30)return;
+ const g=gap(u,ft);if(g>er+25||g>u.rg-15)return;const dx=u.x-ft.x,dy=u.y-ft.y,L=Math.hypot(dx,dy)||1;goTo(u,d,{x:u.x+dx/L*80,y:u.y+dy/L*80},false,dt);}
+/* Tough and up place their guns on the side facing the enemy (or where they were last attacked), spread out, covering their buildings */
+function aiDefSpot(T,type,mine){const d=BD[type];if(!d||!d.dmg||FP[type])return null;const A=G.ais&&G.ais.find(a=>a.T===T);if(!A||!A.iq)return null;
+ const hub=mine.find(b=>b.type==='hq')||mine[0];let eh=null,ed=1e9;for(const b of G.blds)if(foe(b.team,T)&&b.type==='hq'&&b.hp>0){const q=dist(b,hub);if(q<ed){ed=q;eh=b;}}
+ const thr=A.alP&&G.t-A.alP.t<90?A.alP:null,ex=eh?(eh.x-hub.x)/(ed||1):0,ey=eh?(eh.y-hub.y)/(ed||1):0,rg=d.range||200;let best=null,bs=-1e9;
+ for(let i=0;i<40;i++){const o=mine[(Math.random()*mine.length)|0],a=rnd(0,6.28),r=rnd(o.r+d.r+30,250),x=o.x+Math.cos(a)*r,y=o.y+Math.sin(a)*r;if(!canPlace(T,type,x,y))continue;
+  const pj=(x-hub.x)*ex+(y-hub.y)*ey;let s=Math.min(pj,300)-Math.max(0,pj-300)*.8;if(thr)s-=Math.hypot(x-thr.x,y-thr.y)*.5;
+  for(const b of mine){const D=BD[b.type];if(!D)continue;const q=Math.hypot(b.x-x,b.y-y);if(D.dmg){if(q<130)s-=160;}else if(q<rg)s+=35;}
+  if(s>bs){bs=s;best=[x,y];}}
+ return best;}
+/* island maps, where the waves are aircraft: a valuable target with little anti-air around it */
+function aiTargetAir(A,T,pb,from){let best=null,bs=-1;
+ for(const b of pb){const d=BD[b.type]||{};const v=SWK.indexOf(b.type)>=0?4:AITV[b.type]||(d.dmg?.8:1);let aa=0;
+  for(const q of G.blds){if(q.hp<=0||!foe(q.team,T))continue;const D=BD[q.type];if(!D||!D.aa)continue;if(Math.hypot(q.x-b.x,q.y-b.y)<(D.range||200)+120)aa+=(D.cost||400)*q.hp/q.max*1.5;}
+  for(const u of G.units){if(u.hp<=0||!foe(u.team,T))continue;const D=UD[u.type];if(!D.aa||!D.dmg)continue;if(Math.abs(u.x-b.x)<420&&Math.abs(u.y-b.y)<420)aa+=(D.cost||300)*(D.vsAir||1)*u.hp/u.max;}
+  const s=v*1000/(500+aa)/(1+Math.hypot(b.x-from.x,b.y-from.y)/3000);if(s>bs){bs=s;best=b;}}
+ return best||pb[0];}
+
+function aiThink(A){const T=A.T,mine=G.blds.filter(b=>b.team===T);if(!mine.length)return;if(A.iq)aiPre(A,T);
  if(G.t>90&&abReady('cmd',T)){const k=cmdOf(T).k;let go=k==='eco'||k==='inf',x=0,y=0;
   if(k==='armor'){let n=0,f=0,fh=0;for(const u of G.units)if(u.team===T&&u.hp>0&&UD[u.type].veh&&!u.air&&!u.sea&&UD[u.type].dmg){if(u.hp<u.max*.6)n++;if((u.tg&&u.tg.hp>0)||(u.near&&u.near.hp>0)){f++;fh+=u.hp/u.max;}}go=n>=3||(f>=4&&fh/f<.75);}
   else if(k==='def')go=!!A.alarm&&mine.some(b=>b.hp<b.max*.7);
@@ -3901,7 +4005,7 @@ function aiThink(A){const T=A.T,mine=G.blds.filter(b=>b.team===T);if(!mine.lengt
     else if(b.type==='dock'){pool=['cutter','cutter','torp'];if((A.all||isle)&&us.filter(u=>u.type==='ferry').length<(isle?2:1))pool.push('ferry','ferry');if(pSea)pool.push('torp','torp');if(pAir)pool.push('cutter');if(has(T,'yard')&&navy.length>2&&Math.random()<.6)pool=null;}
     else if(b.type==='yard'){pool=['anvil','anvil','frig'];if(pAir)pool.push('frig');}
     else if(b.type==='nbase'){pool=navy.filter(u=>u.type==='thunder').length>=4?['tide']:['thunder','tide'];if(m>3400&&!navy.some(u=>u.type==='rook')&&!b.queue.some(t=>t==='rook'))pool=['rook'];}
-    if(pool)b.want=pool[(Math.random()*pool.length)|0];}
+    if(pool)b.want=A.iq?aiCounter(A,T,pool):pool[(Math.random()*pool.length)|0];}
    if(b.want)prod.push(b);}
   prod.sort((p,q)=>qCost(q.want,T)-qCost(p.want,T));
   for(const b of prod){if(tryQueue(b,b.want))b.want=null;else if(G.money[T]>=qCost(b.want,T))b.want=null;else if(army.length>=6)break;}}
@@ -3929,8 +4033,8 @@ function aiThink(A){const T=A.T,mine=G.blds.filter(b=>b.team===T);if(!mine.lengt
     if(!en&&G.money[T]>500&&has(T,'fac')){const b=mine.find(b=>b.type==='bar'&&b.built&&b.queue.length<3);if(b&&b.queue.indexOf('eng')<0)tryQueue(b,'eng');}
     if(en){const go=Math.hypot(mx-Rp.x,my-Rp.y)<750||dist(en,Rp)<450,g=go?Rp:{x:mx,y:my};if(!en.mv||dist(en.mv,g)>60){en.mv={x:g.x,y:g.y};en.amove=false;en.tg=null;}}}}
   else{for(const u of army)if(u.fortJob)u.fortJob=0;A.fortGo=0;A.fortWant=0;}}
- const home=army.filter(u=>!u.wave&&!u.capJob&&!u.salJob&&!u.lairJob&&!u.fortJob);
- if(A.alarm){if(A.alarm.hp>0)for(const u of home)if(!u.tg&&!u.mv){u.mv={x:A.alarm.x+rnd(-30,30),y:A.alarm.y+rnd(-30,30)};u.amove=true;}A.alarm=null;}
+ const home=army.filter(u=>!u.wave&&!u.capJob&&!u.salJob&&!u.lairJob&&!u.fortJob&&!u.rtr&&!u.raid);
+ if(A.alarm){if(A.iq)A.alP={x:A.alarm.x,y:A.alarm.y,t:G.t};if(A.alarm.hp>0)for(const u of home)if(!u.tg&&!u.mv){u.mv={x:A.alarm.x+rnd(-30,30),y:A.alarm.y+rnd(-30,30)};u.amove=true;}A.alarm=null;}
  const pb=G.blds.filter(b=>foe(b.team,T)&&b.team!==G.gt);if(!pb.length)return;
  const nearest=e=>{let b=null,bd=1e9;for(const p of pb){const d=dist(p,e);if(d<bd){bd=d;b=p;}}return b;};
  if(navy.length&&G.t-(A.fleetT||0)>12){A.fleetT=G.t;seaBuild();const fl=navy.filter(u=>UD[u.type].dmg),es=G.units.filter(u=>foe(u.team,T)&&u.sea&&u.hp>0),tgs={};
@@ -3948,10 +4052,11 @@ function aiThink(A){const T=A.T,mine=G.blds.filter(b=>b.team===T);if(!mine.lengt
   if(strikeReady(T)||abReady('sat',T)){let best=pb[0],bs=-1;for(const p of pb){let s=0;for(const q of pb)if(dist(p,q)<170)s++;if(s>bs){bs=s;best=p;}}if(strikeReady(T))callStrike(T,best.x,best.y);else exec(T,{k:'ab',a:'sat',x:best.x,y:best.y});}
  const wv=isle?home.filter(u=>u.air&&UD[u.type].dmg):home,need=isle?Math.max(3,Math.min(8,A.wave>>1)):A.wave;
  if(A.fortWant&&!isle&&G.t>A.first&&wv.length>=Math.max(10,need)){const Rp=rkPad();for(const u of wv.slice(0,Math.max(A.wave+2,16))){u.fortJob=1;u.wave=false;u.amove=true;u.tg=null;u.mv={x:Rp.x+rnd(-140,140),y:Rp.y+rnd(-140,140)};}A.fortGo=1;A.fortWant=0;A.last=G.t;for(let i=0;i<G.nt;i++)if(foe(i,T))note(i,'Enemy forces are storming the fortress for the rocket','alert',Rp.x,Rp.y);}
- else if(G.t>A.first&&(wv.length>=need||(G.t-A.last>(A.hell?90:140)&&wv.length>=(isle?2:4)))){const t=nearest(mine[0]);for(const u of wv.slice(0,A.wave+2)){u.wave=true;u.amove=true;u.tg=null;u.mv={x:t.x+rnd(-50,50),y:t.y+rnd(-50,50)};}A.wave=Math.min(A.wave+A.grow,24);A.last=G.t;for(let i=0;i<G.nt;i++)if(foe(i,T))note(i,'Enemy forces are on the move');}
- for(const u of army)if(u.wave&&!u.mv&&!u.tg&&!u.near&&!u.ht){if(A.all&&UD[u.type].cap){const tb=pb.filter(b=>b.type!=='hq'&&!b.inv).sort((a,b)=>dist(a,u)-dist(b,u))[0];if(tb){u.tg=tb;continue;}}const t=nearest(u);u.mv={x:t.x+rnd(-30,30),y:t.y+rnd(-30,30)};u.amove=true;}}
+ else if(G.t>A.first&&(!A.iq||isle||G.t-(A.retT==null?-99:A.retT)>25)&&(wv.length>=need||(G.t-A.last>(A.hell?90:140)&&wv.length>=(isle?2:4)))){const sm=A.iq&&!isle,t=sm?aiTarget(A,T,pb,mine.find(b=>b.type==='hq')||mine[0],null):A.iq&&isle?aiTargetAir(A,T,pb,mine[0]):nearest(mine[0]);if(sm)aiLaunch(A,T,wv.slice(0,A.wave+2),t,mine);else for(const u of wv.slice(0,A.wave+2)){u.wave=true;u.amove=true;u.tg=null;u.mv={x:t.x+rnd(-50,50),y:t.y+rnd(-50,50)};}A.wave=Math.min(A.wave+A.grow,24);A.last=G.t;for(let i=0;i<G.nt;i++)if(foe(i,T))note(i,'Enemy forces are on the move');}
+ if(A.iq&&!isle)aiWaveTick(A,T,army,pb,mine);
+ for(const u of army)if(u.wave&&!u.mv&&!u.tg&&!u.near&&!u.ht&&!(A.iq&&!isle&&A.grp&&u.wg===A.grp.id)){if(A.all&&UD[u.type].cap){const tb=pb.filter(b=>b.type!=='hq'&&!b.inv).sort((a,b)=>dist(a,u)-dist(b,u))[0];if(tb){u.tg=tb;continue;}}const t=nearest(u);u.mv={x:t.x+rnd(-30,30),y:t.y+rnd(-30,30)};u.amove=true;}}
 
-function update(dt){G.t+=dt;negBuild();NAV.budget=14;NAV.ms=0;if(G.demo)dirTick(dt);
+function update(dt){G.t+=dt;AIQ.length=0;if(G.ais)for(const A of G.ais)if(A.iq)AIQ[A.T]=A.iq;negBuild();NAV.budget=14;NAV.ms=0;if(G.demo)dirTick(dt);
  for(const b of G.blds)updBld(b,dt);for(const u of G.units)updUnit(u,dt);collide();updShots(dt);updStrikes(dt);updPois(dt);if(G.cp)campTick(dt);
  for(const f of G.fx)f.t-=dt;G.fx=G.fx.filter(f=>f.t>0);for(const p of G.pings)p.t-=dt;G.pings=G.pings.filter(p=>p.t>0);
  for(let T=0;T<G.nt;T++){const P=G.pl[T];swAllChk(T,P,dt);if(P.odT>0)P.odT-=dt;if(P.bsT>0)P.bsT-=dt;if(P.surgeT>0)P.surgeT-=dt;P.bondT+=dt;if(P.bondT>=5){P.bondT-=5;G.money[T]+=[0,6,12,20][lv(T,'bonds')];}P.intT=(P.intT||0)+dt;if(P.intT>=30){P.intT-=30;const L=lv(T,'interest');if(L){const v=Math.min([0,120,220,320][L],Math.round(G.money[T]*(.01+.01*L)));if(v>0){G.money[T]+=v;if(T===ME)note(T,'Compound Interest: ◆'+v,'cash');}}}for(const k in P.cd)if(P.cd[k]>0){P.cd[k]-=dt*(G.upl[T]?1.4:1)*(G.core[T]?1.3:1);if(P.cd[k]<=0&&SW[k]&&has(T,SW[k].b))note(T,SW[k].n+' ready','done',null,null,'swrdy');else if(P.cd[k]<=0&&k==='sat'&&has(T,'gov'))note(T,'Orbital Lance ready','done',null,null,'sat');}}updSW(dt);
@@ -4467,6 +4572,10 @@ const SKINS=[
 let PSKIN=0;try{const v=+localStorage.getItem('dl_skin');if(v>=0&&v<SKINS.length)PSKIN=v|0;}catch(e){}
 const TC0=TC.slice(),TD0=TD.slice(),TL0=TL.slice();
 const SKR=4,SKT=32,SKMAT=new Map(),SKPT=new Map();
+let SKN=0,SKNL=0,SKLOD=0,SKFR=0;
+/* the average color of a skin texture, worked out once from its tile (mixed a little towards the army color when used, so sides stay easy to tell apart) */
+function skAvg(p){const o=SKPT.get(p);if(!o)return p;if(o.avg)return o.avg;let r=128,g=128,b=128;try{const t=o.tile,d=t.getContext('2d').getImageData(0,0,t.width,t.height).data;let R=0,G2=0,B=0,n=0;for(let i=0;i<d.length;i+=16){R+=d[i];G2+=d[i+1];B+=d[i+2];n++;}r=R/n|0;g=G2/n|0;b=B/n|0;}catch(e){}
+ const hx=v=>('0'+Math.max(0,Math.min(255,v)).toString(16)).slice(-2);return o.avg='#'+hx(r)+hx(g)+hx(b);}
 const skHex=n=>{n=String(n);return [parseInt(n.slice(1,3),16),parseInt(n.slice(3,5),16),parseInt(n.slice(5,7),16)];};
 const skStr=a=>'#'+a.map(v=>('0'+Math.round(clamp(v,0,255)).toString(16)).slice(-2)).join('');
 const skMix=(a,b,t)=>{const A=skHex(a),B=skHex(b);return skStr(A.map((v,i)=>v+(B[i]-v)*t));};
@@ -4513,7 +4622,8 @@ function skinMat(k,ci){const key=k+'_'+ci;let m=SKMAT.get(key);if(m)return m;con
 /* while one team's units are drawn, its colors point at the skin */
 let SKD=0,SKS=null,SKF=null;
 let SKU=null;
-function skinOn(team,u){SKU=u||null;if(SKD++>0)return;let k,t;if(SKF){k=SKF[0];t=SKF[1];}else{if(!G||!G.skin)return;k=G.skin[team]|0;t=G.col&&G.col[team];}if(!k||k>=SKINS.length||t==null||!TC0[t])return;let m;try{m=skinMat(k,t);}catch(e){return;}
+function skinOn(team,u){SKU=u||null;if(SKD++>0)return;let k,t;if(SKF){k=SKF[0];t=SKF[1];}else{if(!G||!G.skin)return;k=G.skin[team]|0;t=G.col&&G.col[team];}if(!k||k>=SKINS.length||t==null||!TC0[t])return;let m;try{m=skinMat(k,t);}catch(e){return;}if(!u||u.skF!==SKFR){if(u)u.skF=SKFR;SKN++;}
+ if(SKLOD&&!SKF){SKS=[t,TC[t],TD[t],TL[t]];if(m.neon){const ph=.5+.5*Math.sin(VT*3.2+(team|0)*1.7),fi=Math.min(3,Math.floor(ph*4));TC[t]=skMix(skAvg(m.fr[fi]),TC0[t],.45);TD[t]=skMix(skAvg(m.dfr[fi]),TD0[t],.45);TL[t]=skMix(TC0[t],'#ffffff',.25+.45*ph);}else{TC[t]=skMix(skAvg(m.c),TC0[t],.3);TD[t]=skMix(skAvg(m.d),TD0[t],.3);TL[t]=m.l;}return;}
  SKS=[t,TC[t],TD[t],TL[t]];TC[t]=m.c;TD[t]=m.d;TL[t]=m.l;SKA=skAnchor(SKU);if(SKA)skHook();
  if(m.neon){const ph=.5+.5*Math.sin(VT*3.2+(team|0)*1.7);const fi=Math.min(3,Math.floor(ph*4));TC[t]=m.fr[fi];TD[t]=m.dfr[fi];TL[t]=skMix(TC0[t],'#ffffff',.25+.45*ph);}}
 /* Keep the paint stuck to the unit. A texture is laid out in whatever coordinates the shape is drawn in: the unit's own frame in the
@@ -4848,6 +4958,13 @@ function drawPoi(p,noRing){if(p.type==='efac'){efacOver(p,noRing);return;}if(p.t
  if(PD[p.type].drop&&p.owner===ME){cx.fillStyle='#f3ead8';cx.font='bold 12px sans-serif';cx.textAlign='center';cx.fillText('next '+Math.ceil(PD[p.type].drop.every-p.t)+'s',p.x,p.y+r+20);}
  if(PD[p.type].hot){const ne=p.so<0;cx.strokeStyle=ne?'rgba(255,90,60,'+(.55+.3*Math.sin(VT*4))+')':'rgba(255,194,71,.7)';cx.lineWidth=3;circ(p.x,p.y,r+7);cx.stroke();cx.fillStyle='rgba(21,17,11,.8)';cx.font='bold 10px sans-serif';cx.textAlign='center';const tx=ne?'GUARDED':'HIGH VALUE',tw=cx.measureText(tx).width+8;rr(p.x-tw/2,p.y-r-24,tw,14,4);cx.fill();cx.fillStyle=ne?'#ff8a6b':'#ffc247';cx.fillText(tx,p.x,p.y-r-13.5);}
  if(G.selP===p){cx.strokeStyle='#7dffb0';cx.lineWidth=2;cx.setLineDash([6,5]);circ(p.x,p.y,r+18);cx.stroke();cx.setLineDash([]);}}
+const ICON2=new Map();
+/* one icon of a unit or building in another team's colors, made when first needed */
+function iconOf(t,team){if(team==null||team===ME)return ICON&&ICON[t];const key=t+'|'+team;if(ICON2.has(key))return ICON2.get(key);let url=null;const real=cx,S=72;
+ try{const c=document.createElement('canvas');c.width=c.height=S;cx=c.getContext('2d');
+  if(BD[t]){const r=BD[t].r,s=30/(r+4);cx.setTransform(s,0,0,s,S/2-2,S/2-3);PLAN=1;try{drawBld({x:0,y:0,r,team,type:t,built:true,hp:1,max:1,queue:[],qp:0,near:null,ta:-.8,rally:{x:0,y:0}});}finally{PLAN=0;}}
+  else if(UD[t]){const r=UD[t].r,s=UD[t].veh?26/(r*1.5):3.2;cx.setTransform(s,0,0,s,S/2,S/2);ICM=1;try{drawUnit({id:1,x:0,y:0,r,team,type:t,a:-.6,ta:-.6,hp:1,max:1,load:0,air:false},false);}finally{ICM=0;}}
+  url=c.toDataURL();}catch(e){url=null;}finally{cx=real;}ICON2.set(key,url);return url;}
 function mkIcons(){ICON={};const real=cx,S=72;
  for(const t in BD){const c=document.createElement('canvas');c.width=c.height=S;cx=c.getContext('2d');const r=BD[t].r,s=30/(r+4);cx.setTransform(s,0,0,s,S/2-2,S/2-3);
   PLAN=1;try{drawBld({x:0,y:0,r,team:ME,type:t,built:true,hp:1,max:1,queue:[],qp:0,near:null,ta:-.8,rally:{x:0,y:0}});}finally{PLAN=0;}ICON[t]=c.toDataURL();}
@@ -4875,7 +4992,7 @@ function flat2(vis){if(!G2ON||GQ===0||SHK||CAMS<2||G.demo||cx!==MCX||cx.globalAl
   const real=cx,c=G2X;c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.lineJoin=lj;c.lineCap=lc;c.setLineDash([]);c.lineDashOffset=0;G2K='';cx=c;try{flatPaint(vis);}finally{cx=real;}
   G2S=[c.lineJoin,c.lineCap,c.lineWidth,c.strokeStyle,c.fillStyle,AX,AY,c.getTransform()];G2K=key;G2G=ground;G2D=DECOR;}
  cx.setTransform(1,0,0,1,0,0);cx.drawImage(G2C,0,0);cx.lineJoin=G2S[0];cx.lineCap=G2S[1];cx.lineWidth=G2S[2];cx.strokeStyle=G2S[3];cx.fillStyle=G2S[4];AX=G2S[5];AY=G2S[6];cx.setTransform(G2S[7]);}
-function draw(){if(YAWT!==null){if(!V3)YAWT=null;else{const d=angN(YAWT-YAW);if(Math.abs(d)<.012){setYaw(YAWT);YAWT=null;}else setYaw(YAW+d*.22,true);}}
+function draw(){SKNL=SKN;SKN=0;SKFR++;SKLOD=SKLOD?(SKNL>90?1:0):(SKNL>130?1:0);if(YAWT!==null){if(!V3)YAWT=null;else{const d=angN(YAWT-YAW);if(Math.abs(d)<.012){setYaw(YAWT);YAWT=null;}else setYaw(YAW+d*.22,true);}}
 const now=performance.now(),dv=Math.min(.05,(now-lastDraw)/1000||0);lastDraw=now;VT+=dv;
  FGUSE=false;SHM=0;cx.setTransform(DPR,0,0,DPR,0,0);if(!G){cx.fillStyle='#0f0c08';cx.fillRect(0,0,VW,VH);if(TCON){TCON=false;$('tc').style.display='none';}lay();return;}if(V3&&GQ===0){cx.fillStyle='#0f0c08';cx.fillRect(0,0,VW,VH);}
  if(G&&(ZQK>0||ZQW.length))zrQuakeDraw(dv);let shx=0,shy=0;if(shake>.2&&!RM&&(GQ>0||ZQK>0)){shx=(Math.random()-.5)*shake;shy=(Math.random()-.5)*shake;}shake*=Math.pow(.004,dv);
@@ -5583,7 +5700,7 @@ function start(m){leaveMatch();wake(true);atMenu=false;ICON=null;audioInit();$('
 function setSnd(m){sndM=m;mute=m===2;const b=$('snd');b.className=m===2?'tb off':'tb';b.textContent=m===1?'fx':'♪';try{localStorage.setItem('dl_snd',''+m);localStorage.setItem('dl_mute',mute?'1':'0');if(m&&window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}if(m)voxStop();else voxLoad();if(m===2)sxHush();else sxLoad();}
 
 $('ov').addEventListener('click',e=>{{const dr=e.target.closest&&e.target.closest('[data-dir]');if(dr){dirAct(dr.getAttribute('data-dir'));return;}}{const sv=e.target.closest&&e.target.closest('[data-sv]');if(sv){svAct(sv.getAttribute('data-sv'));return;}}{const k=e.target.closest&&e.target.closest('[data-sk]');if(k&&!k.disabled){skAct(k.getAttribute('data-sk'));return;}const kc=e.target.closest&&e.target.closest('[data-skc]');if(kc&&!kc.disabled){const q=kc.getAttribute('data-skc').split(':'),o=skLoad();o.bots[clamp(+q[0]|0,0,3)].col=clamp(+q[1]|0,0,TC.length-1);skNorm();skStore();sfx('tap');const el=$('skbox');if(el)el.innerHTML=skBox();return;}}
- {const t=e.target,a=t&&t.getAttribute&&t.getAttribute('data-c'),b=t&&t.getAttribute&&t.getAttribute('data-pc');if(a!=null){PREF=clamp(+a|0,0,TC.length-1);LOB.myc=performance.now();try{localStorage.setItem('dl_col',''+PREF);}catch(_){}showStart();return;}if(b!=null){LOB.pc=clamp(+b|0,0,TC.length-1);if(LOB.pc===PREF)LOB.pc=(PREF+1)%TC.length;renderMP();return;}}const rb=e.target.closest&&e.target.closest('[data-rb]');if(rb){ROTB=rb.getAttribute('data-rb')==='1';try{localStorage.setItem('dl_rotb',ROTB?'1':'0');}catch(_){}for(const b of rb.parentNode.children)b.className=(b.getAttribute('data-rb')==='1')===ROTB?'main':'';rotUI();return;}const sb=e.target.closest&&e.target.closest('[data-sub]');if(sb&&G&&!G.over){const v=sb.getAttribute('data-sub'),o=$('ov');audioInit();sfx('tap');if(v){PSCR=+o.scrollTop||0;PSUB=v;showPause();o.scrollTop=0;}else{PSUB='';showPause();o.scrollTop=PSCR;}return;}const sn=e.target.closest&&e.target.closest('[data-sn]');if(sn){audioInit();setSnd(clamp(+sn.getAttribute('data-sn')|0,0,2));for(const b of sn.parentNode.children)b.className=+b.getAttribute('data-sn')===sndM?'main':'';mxSync(1);sndDim();return;}const vc=e.target.closest&&e.target.closest('[data-v]');if(vc){setISO(+vc.getAttribute('data-v'));const cur=V3?2:ISO?1:0,r=vc.parentNode;if(r)for(const b of r.children)b.className=+b.getAttribute('data-v')===cur?'main':'';const tw=$('tiltw');if(tw)tw.style.display=V3?'block':'none';return;}const uc=e.target.closest&&e.target.closest('[data-u]');if(uc){PCUR=curN(uc.getAttribute('data-u'));try{localStorage.setItem('dl_cur',''+PCUR);}catch(_){}showStart();return;}const kc=e.target.closest&&e.target.closest('[data-k]');if(kc){PCMD=clamp(+kc.getAttribute('data-k')|0,0,CMD.length-1);try{localStorage.setItem('dl_cmd',''+PCMD);}catch(_){}showStart();return;}const mc=e.target.closest&&e.target.closest('[data-m]');if(mc){mapIx=+mc.getAttribute('data-m');try{localStorage.setItem('dl_map',''+mapIx);}catch(_){}showStart();return;}const tb=e.target.closest&&e.target.closest('[data-t]');if(tb){starTab=clamp(+tb.getAttribute('data-t')|0,0,TREES.length-1);showStars();return;}const pk=e.target.closest&&e.target.closest('[data-p]');if(pk){buyPerk(pk.getAttribute('data-p'));return;}const nb=e.target.closest&&e.target.closest('[data-n]');if(nb){const a=nb.getAttribute('data-n');audioInit();if(a==='retry'){LOB.auto=0;roomInit();}else if(a==='recon'){sfx('tap');mpRecon();}else if(a==='diag'){DG.who='checking';LOB.html='';renderMP();LOB.auto=0;if(!ROOM)roomInit();else diagRun();}else if(a==='host')hostMatch(false);else if(a==='hostco')hostMatch(true);else if(a.slice(0,5)==='bots:'){LOB.cb=+a.slice(5)===2?2:1;renderMP();}else if(a.slice(0,3)==='cd:'){LOB.cd=DVAL.indexOf(+a.slice(3))>=0?+a.slice(3):1;renderMP();}else if(a==='cancel'){lobBye();lobbyReset();showStart();}else if(a.slice(0,5)==='join:')joinMatch(a.slice(5));return;}const b=e.target.closest&&e.target.closest('[data-d]');if(!b)return;const d=b.getAttribute('data-d');if(d==='speed'){speed=speed===1?1.5:speed===1.5?2:1;b.textContent='Game speed '+speed+'×';return;}if(d==='menu'){if(canSave())saveGame('auto',true);if(G&&G.cp){const tu=!!CAMP[G.cp.i].tut;campLeave();menuMode=tu?'tut':'camp';}else{const sk=!!(G&&G.skm);leaveMatch();G=null;if(menuMode!=='all')menuMode=sk?'skm':'home';}showStart();}else if(d==='resume'){starsOpen=false;PSUB='';paused=false;$('ov').style.display='none';}else start(parseFloat(d));});
+ {const t=e.target,a=t&&t.getAttribute&&t.getAttribute('data-c'),b=t&&t.getAttribute&&t.getAttribute('data-pc');if(a!=null){PREF=clamp(+a|0,0,TC.length-1);LOB.myc=performance.now();try{localStorage.setItem('dl_col',''+PREF);}catch(_){}showStart();return;}if(b!=null){LOB.pc=clamp(+b|0,0,TC.length-1);if(LOB.pc===PREF)LOB.pc=(PREF+1)%TC.length;renderMP();return;}}const rb=e.target.closest&&e.target.closest('[data-rb]');if(rb){ROTB=rb.getAttribute('data-rb')==='1';try{localStorage.setItem('dl_rotb',ROTB?'1':'0');}catch(_){}for(const b of rb.parentNode.children)b.className=(b.getAttribute('data-rb')==='1')===ROTB?'main':'';rotUI();return;}const sb=e.target.closest&&e.target.closest('[data-sub]');if(sb&&G&&!G.over){const v=sb.getAttribute('data-sub'),o=$('ov');audioInit();sfx('tap');if(v){PSCR=+o.scrollTop||0;PSUB=v;showPause();o.scrollTop=0;}else{PSUB='';showPause();o.scrollTop=PSCR;}return;}const sn=e.target.closest&&e.target.closest('[data-sn]');if(sn){audioInit();setSnd(clamp(+sn.getAttribute('data-sn')|0,0,2));for(const b of sn.parentNode.children)b.className=+b.getAttribute('data-sn')===sndM?'main':'';mxSync(1);sndDim();return;}const vc=e.target.closest&&e.target.closest('[data-v]');if(vc){setISO(+vc.getAttribute('data-v'));const cur=V3?2:ISO?1:0,r=vc.parentNode;if(r)for(const b of r.children)b.className=+b.getAttribute('data-v')===cur?'main':'';const tw=$('tiltw');if(tw)tw.style.display=V3?'block':'none';return;}const uc=e.target.closest&&e.target.closest('[data-u]');if(uc){PCUR=curN(uc.getAttribute('data-u'));try{localStorage.setItem('dl_cur',''+PCUR);}catch(_){}showStart();return;}const kc=e.target.closest&&e.target.closest('[data-k]');if(kc){PCMD=clamp(+kc.getAttribute('data-k')|0,0,CMD.length-1);try{localStorage.setItem('dl_cmd',''+PCMD);}catch(_){}showStart();return;}const mc=e.target.closest&&e.target.closest('[data-m]');if(mc){mapIx=+mc.getAttribute('data-m');try{localStorage.setItem('dl_map',''+mapIx);}catch(_){}showStart();return;}const tb=e.target.closest&&e.target.closest('[data-t]');if(tb){starTab=clamp(+tb.getAttribute('data-t')|0,0,TREES.length-1);showStars();return;}const pk=e.target.closest&&e.target.closest('[data-p]');if(pk){buyPerk(pk.getAttribute('data-p'));return;}const nb=e.target.closest&&e.target.closest('[data-n]');if(nb){const a=nb.getAttribute('data-n');audioInit();if(a==='retry'){LOB.auto=0;roomInit();}else if(a==='recon'){sfx('tap');mpRecon();}else if(a==='diag'){DG.who='checking';LOB.html='';renderMP();LOB.auto=0;if(!ROOM)roomInit();else diagRun();}else if(a==='host')hostMatch(false);else if(a==='hostco')hostMatch(true);else if(a.slice(0,5)==='bots:'){LOB.cb=+a.slice(5)===2?2:1;renderMP();}else if(a.slice(0,3)==='cd:'){LOB.cd=DVAL.indexOf(+a.slice(3))>=0?+a.slice(3):1;renderMP();}else if(a==='cancel'){lobBye();lobbyReset();showStart();}else if(a.slice(0,5)==='join:')joinMatch(a.slice(5));return;}const b=e.target.closest&&e.target.closest('[data-d]');if(!b)return;const d=b.getAttribute('data-d');if(d==='speed'){speed=speed===1?1.5:speed===1.5?2:1;b.textContent='Game speed '+speed+'×';return;}if(d==='menu'){if(NET&&!b.dataset.ok){b.dataset.ok='1';b.textContent='Tap again to leave';setTimeout(()=>{try{if(b.isConnected&&b.dataset.ok){delete b.dataset.ok;b.textContent='Leave match';}}catch(e){}},3000);return;}if(canSave())saveGame('auto',true);if(G&&G.cp){const tu=!!CAMP[G.cp.i].tut;campLeave();menuMode=tu?'tut':'camp';}else{const sk=!!(G&&G.skm);leaveMatch();G=null;if(menuMode!=='all')menuMode=sk?'skm':'home';}showStart();}else if(d==='resume'){starsOpen=false;PSUB='';paused=false;$('ov').style.display='none';}else start(parseFloat(d));});
 $('pz').addEventListener('click',()=>{svArm='';PSUB='';if(canSave())saveGame('auto',true);showPause();});
 $('ov').addEventListener('change',e=>{{const sl=e.target&&e.target.getAttribute&&e.target.getAttribute('data-sks');if(sl){const q=sl.split(':'),o=skLoad(),b=o.bots[clamp(+q[1]|0,0,3)];if(q[0]==='d')b.d=clamp(+e.target.value|0,0,DIFFS.length-1);else b.cmd=+e.target.value<0?-1:clamp(+e.target.value|0,0,CMD.length-1);skNorm();skStore();return;}}const t=e.target,k=t&&t.getAttribute&&t.getAttribute('data-vol');if(!k)return;audioInit();setVol(k,t.value,true);volTry(k);});
 $('ov').addEventListener('input',e=>{{const t=e.target,k=t&&t.getAttribute&&t.getAttribute('data-vol');if(k){audioInit();setVol(k,t.value,false);t.style.setProperty('--p',VOLS[k]+'%');const o=$('vo_'+k);if(o)o.textContent=VOLS[k]+'%';return;}}if(e.target&&e.target.id==='gq')setGQ(+e.target.value);else if(e.target&&e.target.id==='tilt')setTilt(+e.target.value);else if(e.target&&e.target.id==='yaw'){YAWT=null;setYaw(+e.target.value*Math.PI/180);}});
@@ -6579,7 +6696,7 @@ function tutAct(a){const [k,v]=a.split(':');audioInit();
 
 /* the reference pages under the lessons: everything in one place, to read at leisure */
 const TUMAN=[
- ['Game modes','<ul><li><b>Single player</b>: you against bots on any battlefield. Choose the map, your commander, the bots\' commanders and the difficulty, from Easy to <b>War is Hell</b>.</li><li><b>Campaign</b>: eight story missions with their own maps, objectives, commanders and achievements.</li><li><b>Multiplayer</b>: co-op against bots or head to head with another player.</li><li><b>Sandbox</b>: everything unlocked, ◆999,999 and 60 stars, for trying things out.</li><li><b>Directory</b>: every unit, building and super weapon, with full stats and a live demonstration.</li></ul>'],
+ ['Game modes','<ul><li><b>Single player</b>: you against bots on any battlefield. Choose the map, your commander, the bots\' commanders and the difficulty, from Easy to <b>War is Hell</b>. From Tough up the bots also play smarter: they build answers to your army, gather before they attack, hit weak spots and pick their targets. Hard and War is Hell bots also raid Harvesters, pull back from fights they are losing and defend their base; War is Hell units also keep out of reach while they reload.</li><li><b>Campaign</b>: eight story missions with their own maps, objectives, commanders and achievements.</li><li><b>Multiplayer</b>: co-op against bots or head to head with another player.</li><li><b>Sandbox</b>: everything unlocked, ◆999,999 and 60 stars, for trying things out.</li><li><b>Directory</b>: every unit, building and super weapon, with full stats and a live demonstration.</li></ul>'],
  ['Winning and losing','<ul><li>In a battle you win when the enemy has nothing left standing, and you lose when you have nothing left. Campaign missions have their own objectives.</li><li>Your <b>Hub</b> makes Harvesters and a <b>Mobile Command</b>. Keep it safe: rebuilding without one is hard.</li><li>Save from the pause menu (<b>II</b>) and load from the mode screens. A battle is also kept when you leave it.</li></ul>'],
  ['Controls','<ul><li><b>Tap</b> a unit to select it, then tap ground to move or an enemy to attack. <b>Double-tap</b> a unit to take every unit of that type on screen.</li><li><b>Drag</b> to scroll and <b>pinch</b> to zoom. In 3D, <b>twist two fingers</b> or tap ⟲ ⟳ to turn the camera.</li><li><b>BOX</b> makes your next drag a selection box. <b>ARMY</b> selects every fighter. <b>HUB</b> jumps to your base.</li><li><b>1 · 2 · 3</b> are squads: hold one to save the selection, tap it to recall, double-tap it to jump there.</li><li>Tap a building to use it. With nothing selected, the bottom panel is the build menu.</li></ul>'],
  ['Economy','<ul><li>Harvesters mine crystal and bring it to the Hub or a Refinery. Fields run out, so expand to new ones.</li><li>Dustrunners are fast harvesters that can also capture buildings. Hackers earn crystal while they stand still.</li><li>Points of interest such as Crystal Wells, Supply Caches and Vaults pay their owner.</li><li>You can build within reach of your buildings, near points you hold, and around a Mobile Command.</li></ul>'],
@@ -6790,14 +6907,14 @@ function campEnd(win,why){if(G.over)return;const C=G.cp,def=CAMP[C.i];if(def.tut
   const CL=CAMP.filter(q=>!q.tut),nd=CL.filter(q=>S.done[q.id]).length;if(nd>=4)aw('half');if(nd>=CL.length)aw('all');if((def.side||[]).length&&sideN>=def.side.length)aw('side');if(C.d>=2)aw('vet');
   if(CL.every(q=>S.done[q.id]&&(S.done[q.id].s|0)>=(q.side||[]).length))aw('allside');if(CL.every(q=>S.done[q.id]&&(S.done[q.id].d|0)>=2))aw('allvet');}
  campStore(S);if(!ICON)mkIcons();
- const st=C.st,sum=o=>Object.keys(o).reduce((a,k)=>a+o[k],0),chips=(u,b)=>{let h='';const one=(t,n,D)=>{if(!D[t])return;h+='<span class="cchip">'+(ICON[t]?'<img src="'+ICON[t]+'" alt="">':'')+cesc(D[t].n)+' <b>×'+n+'</b></span>';};for(const t in u)one(t,u[t],UD);for(const t in b)one(t,b[t],BD);return h||'<span class="cnone">None</span>';};
+ const st=C.st,sum=o=>Object.keys(o).reduce((a,k)=>a+o[k],0),chips=(u,b,tm)=>{let h='';const one=(t,n,D)=>{if(!D[t])return;const ic=tm!=null?iconOf(t,tm):ICON&&ICON[t];h+='<span class="cchip">'+(ic?'<img src="'+ic+'" alt="">':'')+cesc(D[t].n)+' <b>×'+n+'</b></span>';};for(const t in u)one(t,u[t],UD);for(const t in b)one(t,b[t],BD);return h||'<span class="cnone">None</span>';};
  const i=C.i,nxt=win&&i+1<CAMP.length&&!CAMP[i+1].tut;let h='<div class="box cend"><p class="ckick">'+(win?'Mission complete':'Mission failed')+'</p><h1>'+(win?cesc(def.n)+' <i>secured</i>':cesc(def.n)+' <i>lost</i>')+'</h1><p class="csub">Mission '+(i+1)+' · '+CDN[C.d]+' · '+cfmt(C.t)+'</p>';
  h+='<div class="ctx"><b>Command</b>'+cesc(win?(def.win||'Good work. Objective secured.'):(why||def.lose||'The mission is lost.'))+'</div>';
  h+='<p class="lb">Objectives</p>'+campObjHtml(C,def,true);
  h+='<p class="lb">Report</p><div class="cgrid"><div><b>'+cfmt(C.t)+'</b>Time</div><div><b>◆ '+Math.round(st.earned)+'</b>Crystal earned</div><div><b>◆ '+Math.round(st.spent)+'</b>Crystal spent</div><div><b>★ '+rank(0)+'</b>'+RANKS[Math.min(RANKS.length-1,rank(0))]+'</div><div><b>'+(sum(st.lost)+sum(st.blost))+'</b>Lost</div><div><b>'+(sum(st.killed)+sum(st.bkilled))+'</b>Destroyed</div></div>';
  if(def.report){try{const x=def.report(CM);if(x)h+='<p class="cnote">'+cesc(x)+'</p>';}catch(e){}}
  h+='<p class="lb">Your losses ('+(sum(st.lost)+sum(st.blost))+')</p><div class="cchips">'+chips(st.lost,st.blost)+'</div>';
- h+='<p class="lb">Enemy destroyed ('+(sum(st.killed)+sum(st.bkilled))+')</p><div class="cchips">'+chips(st.killed,st.bkilled)+'</div>';
+ h+='<p class="lb">Enemy destroyed ('+(sum(st.killed)+sum(st.bkilled))+')</p><div class="cchips">'+chips(st.killed,st.bkilled,G&&G.nt>1?(ME===1?0:1):null)+'</div>';
  if(sum(st.alost)+sum(st.ablost))h+='<p class="lb">Allies and civilians lost ('+(sum(st.alost)+sum(st.ablost))+')</p><div class="cchips">'+chips(st.alost,st.ablost)+'</div>';
  if(CGOT.length){h+='<p class="lb">Achievements unlocked</p>';for(const k of CGOT){const a=ACH.find(q=>q.k===k);if(a)h+='<div class="cach on"><i>★</i><span>'+cesc(a.n)+'<small>'+cesc(a.d)+'</small></span></div>';}}
  h+='<div class="row" style="margin-top:14px">'+(nxt?'<button class="main" data-cp="next">Next mission</button>':'')+'<button'+(nxt?'':' class="main"')+' data-cp="retry">'+(win?'Play again':'Retry')+'</button><button data-cp="list">Campaign</button></div></div>';
