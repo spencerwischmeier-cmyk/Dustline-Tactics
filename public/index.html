@@ -6,11 +6,13 @@
 <meta name="theme-color" content="#14110c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Dustline">
 <link rel="icon" type="image/png" href="/icons/fav-64.png">
 <link rel="apple-touch-icon" href="/icons/apple-180.png">
-<script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});</script>
+<script>/* iPhone home-screen app: keep the page pinned to the top after launch and after turning the phone */
+(()=>{const pin=()=>{if(window.scrollX||window.scrollY)window.scrollTo(0,0);};addEventListener('load',pin);addEventListener('orientationchange',()=>setTimeout(pin,300));addEventListener('resize',pin);document.addEventListener('visibilitychange',pin);})();
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});</script>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
@@ -225,7 +227,7 @@ details{margin:8px 0}summary{color:#ffc247;font-weight:700;font-size:14px;cursor
  #panel{padding-top:5px}.ph{margin-bottom:4px}
  .card{min-height:50px}.card img{width:22px;height:22px}.card .g{font-size:16px;height:22px;line-height:22px}.card .t{display:none}
  #side{flex-direction:row}
- #ov{padding-top:10px}#ov h1{font-size:28px}#ov ul{columns:2;column-gap:28px}#ov .box{max-width:760px}
+ #ov{padding-top:max(10px,env(safe-area-inset-top));padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}#ov h1{font-size:28px}#ov ul{columns:2;column-gap:28px}#ov .box{max-width:760px}
  .perks{grid-template-columns:repeat(4,1fr)}
 }
 
@@ -282,7 +284,7 @@ button:focus-visible,#gq:focus-visible{outline:2px solid #fff3cf;outline-offset:
 @keyframes trule{to{transform:scaleX(1)}}
 @keyframes tshine{from{background-position:120% 0}to{background-position:-130% 0}}
 @keyframes tpulse{from{box-shadow:0 0 12px rgba(255,194,71,.3);transform:scale(1)}to{box-shadow:0 0 30px rgba(255,194,71,.75);transform:scale(1.04)}}
-@media (max-height:500px){#title{padding-top:14px;padding-bottom:14px}#title h1{font-size:clamp(34px,13vh,64px)}#title h1 i{display:inline;margin-left:.28em}#title .tag{margin-top:8px}#title .rule{margin-top:8px}#title .go{padding:10px 22px}#title .ft{margin-top:8px}}
+@media (max-height:500px){#title{padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}#title h1{font-size:clamp(34px,13vh,64px)}#title h1 i{display:inline;margin-left:.28em}#title .tag{margin-top:8px}#title .rule{margin-top:8px}#title .go{padding:10px 22px}#title .ft{margin-top:8px}}
 @media (prefers-reduced-motion:reduce){#title .kick,#title h1,#title .tag,#title .go,#title .ft{animation:none;opacity:1}#title h1 i{animation:none}#title .rule{animation:none;transform:none}#title{transition:opacity .2s}}
 
 /* ---- mode buttons and saved games ---- */
@@ -3725,7 +3727,7 @@ function updUnit(u,dt){const d=UD[u.type];if(d.giant){cxTick(u,dt);igTick(u,dt);
  u.ta=ft?Math.atan2(ft.y-u.y,ft.x-u.x)-(u.type==='zero'?zrOff(u,ft):0):d.big&&u.ta!=null?u.ta+angN(u.a-u.ta)*Math.min(1,dt*1.2):u.a;}
 function qTime(t,T){return t[0]==='!'?RD[t.slice(1)].time:UD[t].time*cmM(T,'time',ucat(UD[t]))*(UD[t].sea?[1,.87,.8,.74][lv(T,'slips')]:1);}
 function qCost(t,T){return t[0]==='!'?r5(RD[t.slice(1)].cost*cmM(T,'cost','res')):uCost(T,t);}
-function updBld(b,dt0){const d=BD[b.type],dt=dt0*(1+[0,.15,.25,.35][lv(b.team,'fast')])*(G.up[b.team].overclock?1.2:1)*(G.core[b.team]?1.3:1);if(b.stunT>G.t)return;
+function updBld(b,dt0){if(b.hp<=0)return;const d=BD[b.type],dt=dt0*(1+[0,.15,.25,.35][lv(b.team,'fast')])*(G.up[b.team].overclock?1.2:1)*(G.core[b.team]?1.3:1);if(b.stunT>G.t)return;
  if(b.type==='bay'&&b.built)for(const u of G.units)if(!foe(u.team,b.team)&&u.hp<u.max&&UD[u.type].veh&&dist(u,b)<160)u.hp=Math.min(u.max,u.hp+22*dt0);
  if(d.sea&&b.built)for(const u of G.units)if(u.sea&&!foe(u.team,b.team)&&u.hp<u.max&&dist(u,b)<220)u.hp=Math.min(u.max,u.hp+24*dt0);
  if(!b.built){b.prog+=dt/d.time;b.hp=Math.min(b.max,b.hp+b.max*.9*dt/d.time);if(b.prog>=1){b.built=true;note(b.team,d.n+(d.sw?' online — charging '+SW[d.sw].n:' ready'),'done',null,null,'built');if(d.sw){G.pl[b.team].cd[d.sw]=SW[d.sw].cd;for(let T=0;T<G.nt;T++)if(foe(T,b.team))note(T,'Enemy super weapon detected: '+d.n,'alert',b.x,b.y,'swdet');}}return;}
@@ -4104,7 +4106,7 @@ function exec(T,c){if(!G||G.over||!c||typeof c!=='object')return;const ids=Array
  case 'uq':{const u=G.units.find(q=>q.id===c.u&&q.team===T&&q.hp>0&&q.queue),t=c.t;if(!u||typeof t!=='string'||UD[u.type].fab.indexOf(t)<0||u.queue.length>=5||banned(T,t)||(UD[t].req&&!has(T,UD[t].req))||(UD[t].max&&unitCount(T,t)>=UD[t].max)||(UD[t].ammo&&hangRoom(u)<1))break;const cst=uCost(T,t);if(G.money[T]<cst)break;G.money[T]-=cst;u.queue.push(t);break;}
  case 'ucx':{const u=G.units.find(q=>q.id===c.u&&q.team===T&&q.hp>0&&q.queue);if(!u||!u.queue.length)break;const t=u.queue.pop();G.money[T]+=uCost(T,t);if(!u.queue.length)u.qp=0;break;}
  case 'cx':{const b=myB();if(!b||!b.queue.length)break;const t=b.queue.pop();G.money[T]+=qCost(t,T);if(t[0]==='!')delete G.upQ[T][t.slice(1)];if(!b.queue.length)b.qp=0;break;}
- case 'sell':{const b=myB();if(!b||b.type==='hq')break;G.money[T]+=Math.round(bCost(T,b.type)*.5*b.hp/b.max);for(const q of b.queue){G.money[T]+=qCost(q,T);if(q[0]==='!')delete G.upQ[T][q.slice(1)];}b.queue=[];b.hp=0;voxT(T,'sold');sfxT(T,'cash');break;}
+ case 'sell':{const b=myB();if(!b||b.type==='hq')break;G.money[T]+=Math.round(bCost(T,b.type)*.5*b.hp/b.max);for(const q of b.queue){G.money[T]+=qCost(q,T);if(q[0]==='!')delete G.upQ[T][q.slice(1)];}b.queue=[];b.hp=0;b.sold=1;voxT(T,'sold');sfxT(T,'cash');break;}
  case 'rep':{const b=myB();if(b)b.rep=!!c.v;break;}
  case 'rally':{const b=myB();if(b)b.rally={x:clamp(x,0,W),y:clamp(y,0,H)};break;}
  case 'perk':{const q=PERKS.find(o=>o.k===c.p),P=G.pl[T];if(!q||!canBuy(T,q))break;const L=lv(T,q.k);P.spent++;P.perk[q.k]=L+1;
