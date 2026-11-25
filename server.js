@@ -15,7 +15,7 @@ const server=http.createServer((req,res)=>{
   const f=path.normalize(path.join(ROOT,p));if(!f.startsWith(ROOT)){res.writeHead(403);return res.end();}
   fs.stat(f,(e,st)=>{if(e||!st.isFile()){res.writeHead(404,{'content-type':'text/plain'});return res.end('not found');}
     const ext=path.extname(f).toLowerCase(),type=TYPES[ext]||'application/octet-stream',big=ext==='.mp3';
-    const h={'content-type':type,'cache-control':ext==='.html'?'no-cache':'public, max-age=86400'};
+    const fresh=ext==='.html'||ext==='.webmanifest'||p==='/sw.js';const h={'content-type':type,'cache-control':fresh?'no-cache':'public, max-age=86400'};if(p==='/sw.js')h['service-worker-allowed']='/';
     const gz=!big&&/\bgzip\b/.test(req.headers['accept-encoding']||'');
     if(gz){h['content-encoding']='gzip';res.writeHead(200,h);fs.createReadStream(f).pipe(zlib.createGzip()).pipe(res);}
     else{h['content-length']=st.size;res.writeHead(200,h);if(req.method==='HEAD')return res.end();fs.createReadStream(f).pipe(res);}});});

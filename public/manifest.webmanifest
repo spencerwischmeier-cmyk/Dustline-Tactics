@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "Dustline Tactics",
+  "short_name": "Dustline",
+  "description": "A real-time strategy game for phones and tablets: build a base, gather crystal and command your army.",
+  "start_url": "/?app=1",
+  "scope": "/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#14110c",
+  "theme_color": "#14110c",
+  "categories": ["games"],
+  "icons": [
+    {"src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
