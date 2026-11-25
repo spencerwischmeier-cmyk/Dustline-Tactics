@@ -1,7 +1,7 @@
 /* Dustline Tactics service worker: makes the game installable, starts it fast and lets single player run offline.
    The page is fetched fresh whenever there is a connection (so updates arrive at once) and kept for offline use.
    Sounds, voices, music and icons are kept after their first use. Multiplayer (the /ws socket) is never touched. */
-const CORE='dl-core-9c8c8bce9a',MEDIA='dl-media-1aeafc467e';
+const CORE='dl-core-b9d833dd95',MEDIA='dl-media-1aeafc467e';
 const PRE=['/','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png','/icons/maskable-512.png','/icons/apple-180.png','/icons/fav-64.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CORE).then(c=>c.addAll(PRE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CORE&&k!==MEDIA).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

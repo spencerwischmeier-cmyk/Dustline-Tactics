@@ -16,6 +16,9 @@
    a transform (so every fixed layer is placed inside it), and the game reads that height as the window height. */
 (()=>{const ios=/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),sa=navigator.standalone||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches,force=/[?&]iosfix=1/.test(location.search);
  if(!(ios&&sa)&&!force)return;
+ /* iOS 26 lays a soft blur over the top of home-screen apps, under the status bar and a little below it: keep the top bar, the menus'
+    headings and the title clear of it */
+ document.documentElement.classList.add('iossa');{const s2=document.createElement('style');s2.textContent='html.iossa:root{--t:calc(env(safe-area-inset-top) + 24px)!important}html.iossa #ov{padding-top:calc(env(safe-area-inset-top) + 24px)!important}html.iossa #title{padding-top:calc(env(safe-area-inset-top) + 24px)!important}@media (orientation:landscape){html.iossa:root{--t:max(12px,env(safe-area-inset-top))!important}html.iossa #ov{padding-top:max(10px,env(safe-area-inset-top))!important}html.iossa #title{padding-top:max(14px,env(safe-area-inset-top))!important}}';document.head.appendChild(s2);}
  const ih=Object.getOwnPropertyDescriptor(window,'innerHeight')||Object.getOwnPropertyDescriptor(Window.prototype,'innerHeight');const realIH=()=>ih&&ih.get?ih.get.call(window):window.innerHeight;
  let FIX=0,FULL=0;const st=document.createElement('style');document.head.appendChild(st);
  const full=()=>{const land=window.innerWidth>realIH();const a=screen.width,b=screen.height;return force?realIH()+59:(land?Math.min(a,b):Math.max(a,b));};
