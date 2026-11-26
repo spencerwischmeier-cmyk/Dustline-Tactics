@@ -1778,7 +1778,10 @@ if(typeof document!=='undefined'){setInterval(mxTick,100);for(const ev of ['poin
    start "Battle control online", built "Construction complete", air "Aircraft ready", sold "Building sold", funds "Insufficient funds",
    lost "Building lost", base "Our base is under attack", taken "Our building has been captured", detect "Enemy units detected",
    swdet "Enemy super weapon detected", launch "Launch detected", depl "Resources depleted", objf "Objective failed", resd "Research complete",
-   hvatk "Harvester under attack", allyhit "Allies taking fire", sat "Satellite strike online", promo "Commander promoted",
+   hvatk "Harvester under attack", allyhit "Allies taking fire",
+   brdest "Bridge destroyed", brfix "Bridge repaired", trlost "Transport lost", enmove "Enemy forces on the move", stormrdy "Storm strike ready",
+   cxdown "Colossus destroyed", contest "Capture contested", capint "Capture interrupted", rkthit "Rocket impact",
+   shieldup "Base shields online", scanok "Satellite scan complete", supply "Supply drop received", surge "Overdrive engaged", refit "Field repairs complete", sat "Satellite strike online", promo "Commander promoted",
    reinf "Reinforcements have arrived", obj "Objective complete", side "Side objective complete", newobj "New objective",
    won "Mission accomplished", failed "Mission failed", beat "Enemy commander defeated", cap "Building captured",
    swrdy "Super weapon ready", swall (the super weapon Easter egg's own line), unit "Unit ready", ship "Vessel launched", ulost "Unit lost".
@@ -1790,7 +1793,8 @@ if(typeof document!=='undefined'){setInterval(mxTick,100);for(const ev of ['poin
    "Off". If a file cannot be loaded its event does what it did before (a spoken alert for warnings, nothing otherwise). */
 const VOX={start:[.72,.07,1.96,1,3],built:[1.37,.01,1.72,0,5],air:[1.25,0,1.41,0,8],sold:[1.07,0,1.41,0,2],funds:[1.66,.08,1.58,0,6],lost:[1.83,.26,1.54,1,10],base:[.81,.11,1.8,2,25],taken:[.86,.02,1.99,2,6],detect:[.94,.07,1.73,1,45],swdet:[.88,.03,2.11,2,6],launch:[1.15,.12,1.5,2,8],sat:[.83,.06,2.09,1,20],promo:[1.02,.1,1.66,1,4],reinf:[.8,.09,2.04,1,45],obj:[.93,.05,1.54,1,1.5],side:[1.1,.01,1.92,1,1.5],newobj:[.97,.06,1.34,1,1.5],won:[.97,.06,1.64,3,3],failed:[1.57,.26,1.54,3,3],beat:[1,.12,2.07,2,5],
  cap:[.93,.06,1.55,1,6],zwake:[1.05,.1,3.66,2,30],swrdy:[.83,.05,1.58,1,5],swall:[.87,.08,5.1,2,5],unit:[1.34,.05,1.23,0,8],ship:[1.36,0,1.41,0,8],ulost:[1.98,.27,1.57,0,15],
- depl:[1.22,.06,1.58,1,20],objf:[1.41,.19,1.54,1,1.5],resd:[1.08,.03,1.37,0,4],hvatk:[.68,.14,1.8,1,30],allyhit:[.6,.2,1.81,1,40]},
+ depl:[1.22,.06,1.58,1,20],objf:[1.41,.19,1.54,1,1.5],resd:[1.08,.03,1.37,0,4],hvatk:[.68,.14,1.8,1,30],allyhit:[.6,.2,1.81,1,40],
+ brdest:[1.03,0,1.27,1,6],brfix:[.72,0,1.04,0,6],trlost:[1.24,.03,1.25,1,8],enmove:[1.75,0,1.66,1,60],stormrdy:[.88,0,1.33,1,5],cxdown:[1.19,.04,1.46,2,4],contest:[1.23,.03,1.38,1,20],capint:[1.24,.04,1.34,1,15],rkthit:[.88,0,1.16,2,5],shieldup:[1.01,0,1.46,1,3],scanok:[1.09,0,1.56,0,3],supply:[1.53,.01,1.48,0,3],surge:[1.09,0,1.51,1,3],refit:[1.05,.02,1.5,0,3]},
  VX={buf:{},fail:{},st:0,q:[],cur:null,curP:-1,until:0,last:{},tts:0,gain:.9,w:0,log:[],rs:null,rl:'',rt:-1e9,rgain:.8,rlog:[]};
 function voxLoad(){if(VX.st||!AC||sndM!==0||typeof fetch==='undefined')return;VX.st=1;
  for(const k of Object.keys(VOX).concat(Object.keys(VOR))){const bad=()=>{VX.fail[k]=1;};
@@ -1899,17 +1903,19 @@ const SFR={gun1:['cannon1',.045,1.25,2,.5,.61,60],gun2:['cannon2',0,1.1,1,.45,.8
  /* the fifth set: the Boreal Array's Whiteout, waves on the shore, desert wind */
  bor1:['boreal1',0,10.6,3,.6,.32,40],bor2:['boreal2',0,10.6,3,.6,.71,40],wav1:['waves1',0,4,30,.5,.43,0],wav2:['waves2',0,4,30,.5,.24,0],wnd1:['wind1',0,4,30,.4,.69,0],wnd2:['wind2',0,4,30,.4,.25,0],
  /* the sixth set: the colossus upgrades (synthesized) */
- cxk1:['cxcrack',0,3.4,2,.6,.85,0],cxst:['cxstrain',0,2.6,20,.5,.5,0],cxrl:['cxrail',0,3.6,5,.8,.85,0],cxfz:['cxfreeze',0,2.8,10,.5,.88,0],cxsh:['cxshatter',0,2.6,2,.6,.88,0],cxlf:['cxlift',0,4.4,30,.6,.58,0],cxld:['cxland',0,3.2,5,.8,.72,0],cxmt:['cxmeteor',0,2.6,10,.5,.9,0],zrrl:['zrrail',0,1.5,2,.4,.8,0],cxsp:['cxsputter',0,1.9,5,.4,.55,0]},
+ cxk1:['cxcrack',0,3.4,2,.6,.85,0],cxst:['cxstrain',0,2.6,20,.5,.5,0],cxrl:['cxrail',0,3.6,5,.8,.85,0],cxfz:['cxfreeze',0,2.8,10,.5,.88,0],cxsh:['cxshatter',0,2.6,2,.6,.88,0],cxlf:['cxlift',0,4.4,30,.6,.58,0],cxld:['cxland',0,3.2,5,.8,.72,0],cxmt:['cxmeteor',0,2.6,10,.5,.9,0],zrrl:['zrrail',0,1.5,2,.4,.8,0],cxsp:['cxsputter',0,1.9,5,.4,.55,0],
+ /* the sixth set (ElevenLabs): Sapper charge, soldier deaths, ability cues */
+ sap1:['sapper',1.72,2.3,3,.6,.31,40],die1:['die1',0,.65,2,.15,.121,60],die2:['die2',.04,.75,2,.2,.195,60],shld:['shield',0,1.3,5,.5,.39,0],scn:['scan',0,1.25,3,.4,.58,0],srg:['surge',0,1.35,5,.45,.27,0],rep:['repair',.05,1.05,5,.25,.77,0],crt:['crate',0,.6,2,.3,1.7,0]},
  SFC={cannon:[['gun1','gun2'],.12,4,.05],missile:[['rkt1','rkt2'],.15,4,.05],boom:[['boom1','boom2'],.1,5,.07],big:[['big1','big2'],.28,3,.05],fall:[['fall','fall2'],.45,2,.06],
   zap:[['zap1','zap2','zap3'],.12,3,.06],place:[['metal','metal2'],.25,1,0],cash:[['cash1','cash2'],1,1,0],join:[['mpjoin'],1,1,0],mcount:[['mpcd'],1.5,1,0],done:[['beep2'],.6,1,0],cap:[['beep1'],.9,1,0],horn:[['horn1','horn2'],6,1,0],
   /* mg: the last few rounds of a burst with its echo, so a run of them is steady fire that ends as a burst should; rifle: one round */
   mg:[['mg1','mg2','mg3'],.2,3,.05],rifle:[['rf1','rf2'],.07,4,.08],bgun:[['bgun','bgun2'],.3,2,.05],ar:[['ar1','ar2'],.25,3,.05],siren:[['siren1','siren2'],12,1,0],arty:[['arty1','arty2'],.6,3,.06],huge:[['huge1','huge2'],.4,2,.04],zwake:[['colos'],5,1,0],igtake:[['lift'],5,1,0],cxcrack:[['cxk1'],1,2,.04],cxstrain:[['cxst'],2,2,.06],cxrail:[['cxrl'],1,2,0],cxfreeze:[['cxfz'],1,2,.03],cxshatter:[['cxsh'],1,2,.04],cxlift:[['cxlf'],1,2,0],cxland:[['cxld'],1,2,.03],cxmeteor:[['cxmt'],1,2,0],cxsputter:[['cxsp'],1.5,2,.05],zrrail:[['zrrl'],.4,2,.03],
   bomb:[['bomb1','bomb2'],.2,3,.06],whis:[['wh1','wh2'],.5,2,.03],jet:[['jet1','jet2'],3.5,2,.05],
-  torpedo:[['torp1'],.3,3,.05],grenade:[['gren1'],.15,4,.06],tap:[['tap1','tap2'],.05,2,.03],no:[['buzz'],.3,1,0],alert:[['alrt'],1,1,0],drop:[['sdn'],.4,1,.03],dcrash:[['dcr'],.2,3,.06],waves:[['wav1','wav2'],2.5,2,.03],wind:[['wnd1','wnd2'],1.5,3,.04]},
+  torpedo:[['torp1'],.3,3,.05],grenade:[['gren1'],.15,4,.06],tap:[['tap1','tap2'],.05,2,.03],no:[['buzz'],.3,1,0],alert:[['alrt'],1,1,0],drop:[['sdn'],.4,1,.03],dcrash:[['dcr'],.2,3,.06],waves:[['wav1','wav2'],2.5,2,.03],wind:[['wnd1','wnd2'],1.5,3,.04],sapfx:[['sap1'],.15,4,.05],idie:[['die1','die2'],.08,4,.08],shieldfx:[['shld'],.3,2,.03],scanfx:[['scn'],.3,2,.03],surgefx:[['srg'],.3,2,.03],repairfx:[['rep'],.3,2,.03],cratefx:[['crt'],.3,2,.03]},
  /* the synthesized sound that stands in for a name (0: nothing), and names that are only ever synthesized: pop is the old soft burst, drop the old thud */
- SFB={join:'cap',mcount:'tap',zwake:'big',igtake:'big',cxcrack:'big',cxrail:'big',cxshatter:'big',cxland:'big',cxmeteor:'big',cxfreeze:'zap',cxlift:0,cxstrain:0,cxsputter:0,zrrail:'zap',cannon:'gun',missile:'rocket',fall:'big',pop:'boom',drop:'place',horn:0,mg:'shot',rifle:'shot',ar:'shot',siren:'alert',bgun:'gun',bomb:'rocket',arty:0,huge:0,whis:0,jet:0,torpedo:'rocket',grenade:'rocket',dcrash:'boom',waves:0,wind:0},
+ SFB={join:'cap',mcount:'tap',zwake:'big',igtake:'big',cxcrack:'big',cxrail:'big',cxshatter:'big',cxland:'big',cxmeteor:'big',cxfreeze:'zap',cxlift:0,cxstrain:0,cxsputter:0,zrrail:'zap',cannon:'gun',missile:'rocket',fall:'big',pop:'boom',drop:'place',horn:0,mg:'shot',rifle:'shot',ar:'shot',siren:'alert',bgun:'gun',bomb:'rocket',arty:0,huge:0,whis:0,jet:0,torpedo:'rocket',grenade:'rocket',dcrash:'boom',waves:0,wind:0,sapfx:'rocket',idie:'pop',shieldfx:'done',scanfx:'done',surgefx:'done',repairfx:'done',cratefx:'cash'},
  /* what a projectile weapon sounds like, by who fires it; anything not listed keeps its synthesized sound */
- WSN={bastion:'cannon',paladin:'cannon',iron:'cannon',crawler:'cannon',barge:'cannon',bul:'cannon',bow:'cannon',anvil:'bgun',thunder:'bgun',shore:'bgun',lancer:'missile',volley:'missile',talon:'missile',tide:'missile',condor:'bomb',shrike:'bomb',kestrel:'mg',torp:'torpedo',gren:'grenade'},
+ WSN={sapper:'sapfx',bastion:'cannon',paladin:'cannon',iron:'cannon',crawler:'cannon',barge:'cannon',bul:'cannon',bow:'cannon',anvil:'bgun',thunder:'bgun',shore:'bgun',lancer:'missile',volley:'missile',talon:'missile',tide:'missile',condor:'bomb',shrike:'bomb',kestrel:'mg',torp:'torpedo',gren:'grenade'},
  /* bullets: Troopers and the Vanguard fire assault-rifle bursts, the Marksman single rounds, everything else with a gun that hits at once is a machine gun */
  RIF={marks:1},ARF={troop:1,vang:1},
  /* long guns, heard as distant artillery when they fire out of view; jets, which roar past; machines whose engines are heard on the move */
@@ -1924,7 +1930,7 @@ const wSnd=(s,d)=>WSN[s.type]||(d.splash?'rocket':'gun'),iSnd=s=>ARF[s.type]?'ar
 function sfxHuge(x,y){const os=onScreen(x,y);if(os)sfx('big');sfx('huge',os?.8:.5);}
 /* what something sounds like when it is destroyed: a structure collapses, a gun emplacement or a very large machine goes up in a large explosion,
    other machines in a small one, and soldiers and the smallest drones keep the old soft burst */
-function dieSnd(t){if(DRONE[t.type]&&t.k!=='b')return 'dcrash';if(t.k==='b'){const d=BD[t.type];return d&&(d.dmg||d.r<26)?'big':'fall';}const d=UD[t.type];return !d||!d.veh||d.r<9?'pop':d.r>=17?'big':'boom';}
+function dieSnd(t){if(DRONE[t.type]&&t.k!=='b')return 'dcrash';if(t.k==='b'){const d=BD[t.type];return d&&(d.dmg||d.r<26)?'big':'fall';}const d=UD[t.type];return !d||!d.veh?'idie':d.r<9?'pop':d.r>=17?'big':'boom';}
 /* a sound for one player: here if it is this device's player, sent along if it is the second player's */
 function sfxT(T,n){if(!G||G.demo)return;if(T===ME)sfx(n);else if(NET&&NET.role==='host'&&T===1)NET.notes.push(['',n,-1,-1,'']);}
 /* effects leave through the slider and then a soft ceiling: untouched up to 0.6 of full scale, eased toward 0.9 above it, so a pile-up of explosions cannot clip.
@@ -2491,16 +2497,16 @@ function wvWake(p){sfx('big',onScreen(p.x,p.y)?.9:.5);sfx('place');ZQK=Math.max(
 function nestTick(p,dt){if(NET&&NET.role==='client')return;
  if(p.owner===-2){const u=p.uid?G.units.find(q=>q.id===p.uid):null;if(u&&u.hp>0){p.lx=u.x;p.ly=u.y;p.la=u.a||0;p.tm=u.team;}
   else if(p.uid&&!p.dead){p.dead=1;p.owner=-4;p.rb=WDT;p.dx0=p.lx||p.x;p.dy0=p.ly||p.y;p.da=p.la||0;}return;}
- if(p.owner===-4){p.rb-=dt;if(p.rb<=0){p.rb=0;p.owner=-3;wvBoom(p);for(let T=0;T<G.nt;T++)note(T,'The Weaver has been destroyed. It will not return.','siren',p.dx0,p.dy0);}return;}
+ if(p.owner===-4){p.rb-=dt;if(p.rb<=0){p.rb=0;p.owner=-3;wvBoom(p);for(let T=0;T<G.nt;T++)note(T,'The Weaver has been destroyed. It will not return.','siren',p.dx0,p.dy0,'cxdown');}return;}
  if(p.owner===-3)return;
  const R=PD.nest.R,R2=R*R,cn=new Array(G.nt).fill(0);
  for(const u of G.units){if(u.air||u.sea||u.hp<=0||u.out||UD[u.type].hv)continue;const dx=u.x-p.x,dy=u.y-p.y;if(dx*dx+dy*dy<R2)cn[u.team]++;}
- if(p.ct>=0&&!cn[p.ct]){if(p.prog>.02){note(p.ct,'Your troops left the circle — the count for the Weaver starts over','alert',p.x,p.y);for(let T=0;T<G.nt;T++)if(T!==p.ct)note(T,'The hold on the Weaver is broken','done',p.x,p.y);}p.ct=-1;p.prog=0;p.nx=0;p.aim=0;}
+ if(p.ct>=0&&!cn[p.ct]){if(p.prog>.02){note(p.ct,'Your troops left the circle — the count for the Weaver starts over','alert',p.x,p.y,'capint');for(let T=0;T<G.nt;T++)if(T!==p.ct)note(T,'The hold on the Weaver is broken','done',p.x,p.y);}p.ct=-1;p.prog=0;p.nx=0;p.aim=0;}
  if(p.ct<0){let best=-1;for(let i=0;i<G.nt;i++)if(cn[i]&&(best<0||cn[i]>cn[best]))best=i;
   if(best>=0&&!cn.some((n,i)=>n&&foe(i,best))){p.ct=best;p.prog=0;p.nx=0;p.aim=0;
    for(let T=0;T<G.nt;T++)note(T,T===best?'Your troops are taking the Weaver — keep them inside the circle for 2 minutes':lairName(best)+' forces are taking the Weaver!',T===best||!foe(T,best)?'done':'siren',p.x,p.y);}}
  if(p.ct>=0){const con=cn.some((n,i)=>n&&foe(i,p.ct));
-  if(con){if(!p.aim){p.aim=1;note(p.ct,'Weaver capture contested — clear the circle to keep counting','alert',p.x,p.y);}}
+  if(con){if(!p.aim){p.aim=1;note(p.ct,'Weaver capture contested — clear the circle to keep counting','alert',p.x,p.y,'contest');}}
   else{p.aim=0;p.prog=Math.min(1,p.prog+dt/120);const left=120*(1-p.prog);
    for(const [k,tl] of [[1,60],[2,30],[3,10]])if((p.nx|0)<k&&left<=tl){p.nx=k;for(let T=0;T<G.nt;T++)note(T,(T===p.ct?'The Weaver wakes in ':lairName(p.ct)+' takes the Weaver in ')+tl+' seconds',T===p.ct||!foe(T,p.ct)?'done':'alert',p.x,p.y);}
    if(p.prog>=1)nestTake(p,p.ct);}}}
@@ -2642,7 +2648,7 @@ function jrUnit(u,d,dt){if(NET&&NET.role==='client')return;u.stunT=0;const p=jrY
 function jrRun(p,dt){const T=jrTrk();if(!T)return;
  for(let i=0;i<5;i++){if(p.dm&(1<<i))continue;const u=p.uids&&G.units.find(q=>q.id===p.uids[i]);if(u&&u.hp>0)continue;p.dm|=1<<i;const q=jrCarAt(T,p.h,p.lp,i);gBoom(q.x,q.y,50);
   for(let k=0;k<G.nt;k++)note(k,i===0?(k===p.tm?'The Juggernaut\'s locomotive is destroyed — the train has stopped':'The Juggernaut\'s locomotive is destroyed — the train has stopped dead'):(k===p.tm?'Juggernaut '+JNM[i]+' destroyed':'The Juggernaut has lost its '+JNM[i]),k===p.tm||!foe(k,p.tm)?'alert':'done',q.x,q.y);}
- if(p.dm===31){p.owner=-3;p.v=0;for(let k=0;k<G.nt;k++)note(k,'The Juggernaut has been destroyed. It will not return.','siren',p.x,p.y);return;}
+ if(p.dm===31){p.owner=-3;p.v=0;for(let k=0;k<G.nt;k++)note(k,'The Juggernaut has been destroyed. It will not return.','siren',p.x,p.y,'cxdown');return;}
  const go=!(p.dm&1)&&!jrHeld();let vt=0;
  if(go){if(!p.lp)vt=JSP;else if(p.goal!=null){const cur=jmod(p.h-JLEN/2-T.SL,T.LL),d=jmod(p.goal-cur+T.LL/2,T.LL)-T.LL/2;if(Math.abs(d)<8&&Math.abs(p.v)<12)p.goal=null;else vt=clamp(d*.8,-JSP,JSP);}}
  p.v=go?p.v+clamp(vt-p.v,-JAC*dt,JAC*dt):0;p.h+=p.v*dt;if(!p.lp&&p.h-JLEN>T.SL+4)p.lp=1;p.mvg=Math.abs(p.v)>4?1:0;
@@ -2662,12 +2668,12 @@ function yardTick(p,dt){if(NET&&NET.role==='client')return;
  if(p.owner===-2){jrRun(p,dt);return;}if(p.owner===-3)return;
  const R=PD.jyard.R,R2=R*R,cn=new Array(G.nt).fill(0);
  for(const u of G.units){if(u.air||u.sea||u.hp<=0||u.out||UD[u.type].hv)continue;const dx=u.x-p.x,dy=u.y-p.y;if(dx*dx+dy*dy<R2)cn[u.team]++;}
- if(p.ct>=0&&!cn[p.ct]){if(p.prog>.02){note(p.ct,'Your troops left the circle — the count for the Juggernaut starts over','alert',p.x,p.y);for(let T=0;T<G.nt;T++)if(T!==p.ct)note(T,'The hold on the Juggernaut is broken','done',p.x,p.y);}p.ct=-1;p.prog=0;p.nx=0;p.aim=0;}
+ if(p.ct>=0&&!cn[p.ct]){if(p.prog>.02){note(p.ct,'Your troops left the circle — the count for the Juggernaut starts over','alert',p.x,p.y,'capint');for(let T=0;T<G.nt;T++)if(T!==p.ct)note(T,'The hold on the Juggernaut is broken','done',p.x,p.y);}p.ct=-1;p.prog=0;p.nx=0;p.aim=0;}
  if(p.ct<0){let best=-1;for(let i=0;i<G.nt;i++)if(cn[i]&&(best<0||cn[i]>cn[best]))best=i;
   if(best>=0&&!cn.some((n,i)=>n&&foe(i,best))){p.ct=best;p.prog=0;p.nx=0;p.aim=0;
    for(let T=0;T<G.nt;T++)note(T,T===best?'Your troops are taking the Juggernaut — keep them inside the circle for 2 minutes':lairName(best)+' forces are taking the Juggernaut!',T===best||!foe(T,best)?'done':'siren',p.x,p.y);}}
  if(p.ct>=0){const con=cn.some((n,i)=>n&&foe(i,p.ct));
-  if(con){if(!p.aim){p.aim=1;note(p.ct,'Juggernaut capture contested — clear the circle to keep counting','alert',p.x,p.y);}}
+  if(con){if(!p.aim){p.aim=1;note(p.ct,'Juggernaut capture contested — clear the circle to keep counting','alert',p.x,p.y,'contest');}}
   else{p.aim=0;p.prog=Math.min(1,p.prog+dt/120);const left=120*(1-p.prog);
    for(const [k,tl] of [[1,60],[2,30],[3,10]])if((p.nx|0)<k&&left<=tl){p.nx=k;for(let T=0;T<G.nt;T++)note(T,(T===p.ct?'The Juggernaut wakes in ':lairName(p.ct)+' takes the Juggernaut in ')+tl+' seconds',T===p.ct||!foe(T,p.ct)?'done':'alert',p.x,p.y);}
    if(p.prog>=1)yardTake(p,p.ct);}}}
@@ -2758,7 +2764,7 @@ function rkLaunchLocal(p){sfxHuge(p.x,p.y);sfx('big',onScreen(p.x,p.y)?1:.4);if(
 function rkImpact(p,real){const x=p.tx,y=p.ty,R=rkR();p.it=G.t;
  if(real){const T=p.owner;for(const e of G.units.concat(G.blds)){if(e.hp<=0)continue;const d=Math.max(0,Math.hypot(e.x-x,e.y-y)-(e.k==='b'?e.r:0));if(d>=R)continue;const f=1-.7*(d/R)*(d/R);hurt(e,(e.k==='b'?6500:3200)*f,null,T);}
   for(const b of G.brs)if(b.hp>0&&Math.hypot(b.x-x,b.y-y)<R)hurt(b,3000,null,T);
-  for(let i=0;i<G.nt;i++)note(i,'The rocket has struck','alert',x,y);}
+  for(let i=0;i<G.nt;i++)note(i,'The rocket has struck','alert',x,y,'rkthit');}
  gBoom(x,y,120);for(let i=0;i<10;i++){const a=i/10*6.283,d=R*rnd(.35,.7);G.fx.push({k:'bm',x:x+Math.cos(a)*d,y:y+Math.sin(a)*d,z:rnd(10,60),r:rnd(160,260),t:rnd(.9,1.5),T:1.5});}
  for(let i=0;i<16;i++){const a=rnd(0,6.28),d=Math.sqrt(Math.random())*R*.85;DC.push({x:x+Math.cos(a)*d,y:y+Math.sin(a)*d,r:rnd(90,200),a:rnd(0,6.28),t:120});}
  ZQK=Math.max(ZQK,3);sfxHuge(x,y);sfx('huge',1);}
@@ -3271,17 +3277,17 @@ function zrGunState(u){if(!G||!u.mfT)return {rc:0,ch:1,ht:0};const fa=G.t-u.mfT;
 function lairTick(p,dt){if(NET&&NET.role==='client')return;
  if(p.owner===-2){const u=p.uid?G.units.find(q=>q.id===p.uid):null;if(u&&u.hp>0){p.lx=u.x;p.ly=u.y;p.la=u.a||0;p.lz=uZ(u);p.tm=u.team;}
   else if(p.uid&&!p.dead){p.dead=1;p.owner=-4;p.rb=IDT;p.dx0=p.lx||p.x;p.dy0=p.ly||p.y;p.da=p.la||0;p.dz0=p.lz||120;p.sp=Math.random()<.5?-1:1;}return;}
- if(p.owner===-4){p.rb-=dt;if(p.rb<=0){p.rb=0;p.owner=-3;igBoom(p);for(let T=0;T<G.nt;T++)note(T,'Ignis has been destroyed. It will not return.','siren',p.wx,p.wy);}return;}
+ if(p.owner===-4){p.rb-=dt;if(p.rb<=0){p.rb=0;p.owner=-3;igBoom(p);for(let T=0;T<G.nt;T++)note(T,'Ignis has been destroyed. It will not return.','siren',p.wx,p.wy,'cxdown');}return;}
  if(p.owner===-3)return;
  const R=PD.lair.R,R2=R*R,cn=new Array(G.nt).fill(0);
  for(const u of G.units){if(u.air||u.sea||u.hp<=0||u.out||UD[u.type].hv)continue;const dx=u.x-p.x,dy=u.y-p.y;if(dx*dx+dy*dy<R2)cn[u.team]++;}
  /* the capturing team must never leave the ring empty of its troops: if it does, the count starts over */
- if(p.ct>=0&&!cn[p.ct]){if(p.prog>.02){note(p.ct,'Your troops left the ring — the count for Ignis starts over','alert',p.x,p.y);for(let T=0;T<G.nt;T++)if(T!==p.ct)note(T,'The hold on Ignis is broken','done',p.x,p.y);}p.ct=-1;p.prog=0;p.nx=0;p.aim=0;}
+ if(p.ct>=0&&!cn[p.ct]){if(p.prog>.02){note(p.ct,'Your troops left the ring — the count for Ignis starts over','alert',p.x,p.y,'capint');for(let T=0;T<G.nt;T++)if(T!==p.ct)note(T,'The hold on Ignis is broken','done',p.x,p.y);}p.ct=-1;p.prog=0;p.nx=0;p.aim=0;}
  if(p.ct<0){let best=-1;for(let i=0;i<G.nt;i++)if(cn[i]&&(best<0||cn[i]>cn[best]))best=i;
   if(best>=0&&!cn.some((n,i)=>n&&foe(i,best))){p.ct=best;p.prog=0;p.nx=0;p.aim=0;
    for(let T=0;T<G.nt;T++)note(T,T===best?'Your troops are taking Ignis — keep them inside the ring for 2 minutes':lairName(best)+' forces are taking Ignis!',T===best||!foe(T,best)?'done':'siren',p.x,p.y);}}
  if(p.ct>=0){const con=cn.some((n,i)=>n&&foe(i,p.ct));
-  if(con){if(!p.aim){p.aim=1;note(p.ct,'Ignis capture contested — clear the ring to keep counting','alert',p.x,p.y);}}
+  if(con){if(!p.aim){p.aim=1;note(p.ct,'Ignis capture contested — clear the ring to keep counting','alert',p.x,p.y,'contest');}}
   else{p.aim=0;p.prog=Math.min(1,p.prog+dt/120);const left=120*(1-p.prog);
    for(const [k,tl] of [[1,60],[2,30],[3,10]])if((p.nx|0)<k&&left<=tl){p.nx=k;for(let T=0;T<G.nt;T++)note(T,(T===p.ct?'Ignis wakes in ':lairName(p.ct)+' takes Ignis in ')+tl+' seconds',T===p.ct||!foe(T,p.ct)?'done':'alert',p.x,p.y);}
    if(p.prog>=1)lairTake(p,p.ct);}}}
@@ -3427,7 +3433,7 @@ function zeroTick(p,dt){if(NET&&NET.role==='client')return;
   if(side<0||G.side[u.team]!==side){/* control lost: it powers down where it stands */
    const T0=u.team;u.out=1;u.hp=Math.max(1,u.hp);p.owner=-1;p.uid=0;
    for(let T=0;T<G.nt;T++)note(T,G.side[T]===G.side[T0]?'Zero has powered down — your side lost a power point':'Zero has powered down — '+lairName(T0)+' lost a power point',G.side[T]===G.side[T0]?'alert':'done',p.x,p.y);}}
- else if(p.owner===-4){p.rb-=dt;if(p.rb<=0){p.owner=-3;p.rb=0;zrBoom(p);for(let T=0;T<G.nt;T++)note(T,'Zero has been destroyed. There is only one — it will not return.','siren',p.x,p.y);}}
+ else if(p.owner===-4){p.rb-=dt;if(p.rb<=0){p.owner=-3;p.rb=0;zrBoom(p);for(let T=0;T<G.nt;T++)note(T,'Zero has been destroyed. There is only one — it will not return.','siren',p.x,p.y,'cxdown');}}
  if(p.owner===-1&&side>=0){/* wake it for the side that holds all five: the team on it with the most points takes the controls */
   const cnt={};for(const q of zrPts())cnt[q.owner]=(cnt[q.owner]|0)+1;let T=-1;for(const k in cnt)if(T<0||cnt[k]>cnt[T]||(cnt[k]===cnt[T]&&+k<T))T=+k;
   if(!p.wk){p.wk=1;zrQuake(p);}const z=spawn(T,'zero',p.x,p.y);z.max=UD.zero.hp;z.hp=Math.max(1,Math.min(z.max,p.hp||z.max));z.a=z.ta=p.a||ZRB;p.uid=z.id;p.owner=-2;p.lx=p.x;p.ly=p.y;
@@ -3608,7 +3614,7 @@ function stepTo(u,gx,gy,sp,dt){if(u.cxM)return 999;let far=0;if(u.sea){const w=s
  else{if(G.rivers.length&&!u.air&&!UD[u.type].allTer){const w=route(u,gx,gy);if(w){far=Math.hypot(gx-u.x,gy-u.y)+20;gx=w.x;gy=w.y;}}
  if(!u.air&&!UD[u.type].allTer){const w=navStep(u,gx,gy);if(w){if(!far)far=Math.hypot(gx-u.x,gy-u.y)+1;gx=w.x;gy=w.y;}}}
  const dx=gx-u.x,dy=gy-u.y,d=Math.hypot(dx,dy);if(d<.5)return far;const s=Math.min(d,sp*dt);u.x+=dx/d*s;u.y+=dy/d*s;u.a=Math.atan2(dy,dx);return far||d-s;}
-function brDown(b,kt){b.hp=0;b.down=G.t+120;fxAdd({k:'bm',x:b.x,y:b.y,t:.7,T:.7,r:70,s:'-'});for(let T=0;T<G.nt;T++)note(T,'A bridge was destroyed','fall',b.x,b.y);if(kt>=0)addXP(kt,100);}
+function brDown(b,kt){b.hp=0;b.down=G.t+120;fxAdd({k:'bm',x:b.x,y:b.y,t:.7,T:.7,r:70,s:'-'});for(let T=0;T<G.nt;T++)note(T,'A bridge was destroyed','fall',b.x,b.y,'brdest');if(kt>=0)addXP(kt,100);}
 function nearestOre(u){let b=null,bd=1e9;for(const o of G.ores){if(o.amt<=0||!sameLand(o,u))continue;const d=dist(o,u);if(d<bd){bd=d;b=o;}}return b;}
 function harv(u,d,dt){u.ta=u.a;
  if(u.mv){if(stepTo(u,u.mv.x,u.mv.y,u.sp,dt)<4||u.st>.5)u.mv=null;return;}
@@ -3758,7 +3764,7 @@ function updBld(b,dt0){if(b.hp<=0)return;const d=BD[b.type],dt=dt0*(1+[0,.15,.25
    note(b.team,'Research complete: '+RD[k].n,'done',null,null,'resd');}
   else{const sh=UD[t].sea&&b.wx!=null,bt=sh&&UD[t].r>30?seaBerth(b,UD[t].r):null,u=spawn(b.team,t,bt?bt[0]:sh?b.wx+rnd(-8,8):b.x+b.dx*(b.r+14),bt?bt[1]:sh?b.wy+rnd(-8,8):b.y+b.dy*(b.r+14));if(bt)u.a=u.ta=Math.atan2(b.dy,b.dx);
    if(UD[t].ammo&&hangN(b))dock(u,b);else if(bt&&bt[2]){if(bt[2].length)u.mv={x:bt[2][0],y:bt[2][1]};}else if(!UD[t].hv)u.mv={x:b.rally.x+rnd(-20,20),y:b.rally.y+rnd(-20,20)};voxT(b.team,UD[t].air?'air':UD[t].sea?'ship':'unit');if(UD[t].sea){const P=G.pl[b.team];if(UD[t].r>=19||G.t-(P.hornT==null?-99:P.hornT)>25){P.hornT=G.t;sfxT(b.team,'horn');}}if(b.rep)tryQueue(b,t);}}}
- if(b.type==='bea'){const s=G.st[b.team];if(s.t<STRIKE_CD){s.t+=dt0*(G.upl[b.team]?1.4:1);if(s.t>=STRIKE_CD)note(b.team,'Storm Strike ready','done');}}
+ if(b.type==='bea'){const s=G.st[b.team];if(s.t<STRIKE_CD){s.t+=dt0*(G.upl[b.team]?1.4:1);if(s.t>=STRIKE_CD)note(b.team,'Storm Strike ready','done',null,null,'stormrdy');}}
  if(d.range){b.cdT-=dt;b.acq-=dt;if(b.near&&b.near.hp<=0)b.near=null;if(b.acq<=0){b.acq=.3;b.near=nearestEnemy(b,b.rg,d);}
   if(b.near&&b.cdT<=0&&inRange(b,b.near,d))fire(b,b.near,d);}}
 /* units push apart and out of buildings. Both checks use a grid of 64-px cells (units) and 128-px cells (buildings), so each unit only looks at what is near it:
@@ -4082,8 +4088,8 @@ function aiThink(A){const T=A.T,mine=G.blds.filter(b=>b.team===T);if(!mine.lengt
  for(const k of SWK)if(abReady(k,T)&&pb.length){let best=pb[0],bs=-1;for(const p of pb){let sc=0;for(const q of pb)if(dist(p,q)<230)sc++;if(sc>bs){bs=sc;best=p;}}{const ct=cxBotAim(T,k)||best;exec(T,{k:'ab',a:k,x:ct.x,y:ct.y});}}
   if(strikeReady(T)||abReady('sat',T)){let best=pb[0],bs=-1;for(const p of pb){let s=0;for(const q of pb)if(dist(p,q)<170)s++;if(s>bs){bs=s;best=p;}}if(strikeReady(T))callStrike(T,best.x,best.y);else exec(T,{k:'ab',a:'sat',x:best.x,y:best.y});}
  const wv=isle?home.filter(u=>u.air&&UD[u.type].dmg):home,need=isle?Math.max(3,Math.min(8,A.wave>>1)):A.wave;
- if(A.fortWant&&!isle&&G.t>A.first&&wv.length>=Math.max(10,need)){const Rp=rkPad();for(const u of wv.slice(0,Math.max(A.wave+2,16))){u.fortJob=1;u.wave=false;u.amove=true;u.tg=null;u.mv={x:Rp.x+rnd(-140,140),y:Rp.y+rnd(-140,140)};}A.fortGo=1;A.fortWant=0;A.last=G.t;for(let i=0;i<G.nt;i++)if(foe(i,T))note(i,'Enemy forces are storming the fortress for the rocket','alert',Rp.x,Rp.y);}
- else if(G.t>A.first&&(!A.iq||isle||G.t-(A.retT==null?-99:A.retT)>25)&&(wv.length>=need||(G.t-A.last>(A.hell?90:140)&&wv.length>=(isle?2:4)))){const sm=A.iq&&!isle,t=sm?aiTarget(A,T,pb,mine.find(b=>b.type==='hq')||mine[0],null):A.iq&&isle?aiTargetAir(A,T,pb,mine[0]):nearest(mine[0]);if(sm)aiLaunch(A,T,wv.slice(0,A.wave+2),t,mine);else for(const u of wv.slice(0,A.wave+2)){u.wave=true;u.amove=true;u.tg=null;u.mv={x:t.x+rnd(-50,50),y:t.y+rnd(-50,50)};}A.wave=Math.min(A.wave+A.grow,24);A.last=G.t;for(let i=0;i<G.nt;i++)if(foe(i,T))note(i,'Enemy forces are on the move');}
+ if(A.fortWant&&!isle&&G.t>A.first&&wv.length>=Math.max(10,need)){const Rp=rkPad();for(const u of wv.slice(0,Math.max(A.wave+2,16))){u.fortJob=1;u.wave=false;u.amove=true;u.tg=null;u.mv={x:Rp.x+rnd(-140,140),y:Rp.y+rnd(-140,140)};}A.fortGo=1;A.fortWant=0;A.last=G.t;for(let i=0;i<G.nt;i++)if(foe(i,T))note(i,'Enemy forces are storming the fortress for the rocket','alert',Rp.x,Rp.y,'enmove');}
+ else if(G.t>A.first&&(!A.iq||isle||G.t-(A.retT==null?-99:A.retT)>25)&&(wv.length>=need||(G.t-A.last>(A.hell?90:140)&&wv.length>=(isle?2:4)))){const sm=A.iq&&!isle,t=sm?aiTarget(A,T,pb,mine.find(b=>b.type==='hq')||mine[0],null):A.iq&&isle?aiTargetAir(A,T,pb,mine[0]):nearest(mine[0]);if(sm)aiLaunch(A,T,wv.slice(0,A.wave+2),t,mine);else for(const u of wv.slice(0,A.wave+2)){u.wave=true;u.amove=true;u.tg=null;u.mv={x:t.x+rnd(-50,50),y:t.y+rnd(-50,50)};}A.wave=Math.min(A.wave+A.grow,24);A.last=G.t;for(let i=0;i<G.nt;i++)if(foe(i,T))note(i,'Enemy forces are on the move','',null,null,'enmove');}
  if(A.iq&&!isle)aiWaveTick(A,T,army,pb,mine);
  for(const u of army)if(u.wave&&!u.mv&&!u.tg&&!u.near&&!u.ht&&!(A.iq&&!isle&&A.grp&&u.wg===A.grp.id)){if(A.all&&UD[u.type].cap){const tb=pb.filter(b=>b.type!=='hq'&&!b.inv).sort((a,b)=>dist(a,u)-dist(b,u))[0];if(tb){u.tg=tb;continue;}}const t=nearest(u);u.mv={x:t.x+rnd(-30,30),y:t.y+rnd(-30,30)};u.amove=true;}}
 
@@ -4092,11 +4098,11 @@ function update(dt){G.t+=dt;AIQ.length=0;if(G.ais)for(const A of G.ais)if(A.iq)A
  for(const f of G.fx)f.t-=dt;G.fx=G.fx.filter(f=>f.t>0);for(const p of G.pings)p.t-=dt;G.pings=G.pings.filter(p=>p.t>0);
  for(let T=0;T<G.nt;T++){const P=G.pl[T];swAllChk(T,P,dt);if(P.odT>0)P.odT-=dt;if(P.bsT>0)P.bsT-=dt;if(P.surgeT>0)P.surgeT-=dt;P.bondT+=dt;if(P.bondT>=5){P.bondT-=5;G.money[T]+=[0,6,12,20][lv(T,'bonds')];}P.intT=(P.intT||0)+dt;if(P.intT>=30){P.intT-=30;const L=lv(T,'interest');if(L){const v=Math.min([0,120,220,320][L],Math.round(G.money[T]*(.01+.01*L)));if(v>0){G.money[T]+=v;if(T===ME)note(T,'Compound Interest: ◆'+v,'cash');}}}for(const k in P.cd)if(P.cd[k]>0){P.cd[k]-=dt*(G.upl[T]?1.4:1)*(G.core[T]?1.3:1);if(P.cd[k]<=0&&SW[k]&&has(T,SW[k].b))note(T,SW[k].n+' ready','done',null,null,'swrdy');else if(P.cd[k]<=0&&k==='sat'&&has(T,'gov'))note(T,'Orbital Lance ready','done',null,null,'sat');}}updSW(dt);
  for(const r of G.reveals)r.t-=dt;G.reveals=G.reveals.filter(r=>r.t>0);
- for(const b of G.brs)if(b.hp<=0&&G.t>=b.down){b.hp=b.max;fxAdd({k:'mk',x:b.x,y:b.y,t:1,T:1,c:'#f3ead8',r:60});for(let T=0;T<G.nt;T++)note(T,'A bridge has been rebuilt','done',b.x,b.y);}
+ for(const b of G.brs)if(b.hp<=0&&G.t>=b.down){b.hp=b.max;fxAdd({k:'mk',x:b.x,y:b.y,t:1,T:1,c:'#f3ead8',r:60});for(let T=0;T<G.nt;T++)note(T,'A bridge has been rebuilt','done',b.x,b.y,'brfix');}
  for(const A of G.ais){A.timer-=dt;if(A.timer<=0){A.timer=1;aiThink(A);}}
  for(const b of G.blds)if(b.hp<=0)for(const q of b.queue)if(q[0]==='!')delete G.upQ[b.team][q.slice(1)];
  if(!(NET&&NET.role==='client'))for(const u of G.units.slice())if(u.hp<=0&&u.cargo&&u.cargo.length){if(u.sea){const L=landing(u);if(L){note(u.team,'A '+UD[u.type].n+' was sunk inshore — those aboard got to the beach','alert',u.x,u.y);unloadAt(u,.5,L);}else{note(u.team,'A '+UD[u.type].n+' was sunk — all aboard lost','alert',u.x,u.y);u.cargo=[];}}
-  else{const wl=inLake(u.x,u.y,0);if(wl||inRiver(u.x,u.y,0)){note(u.team,'An Albatross went down '+(wl&&wl.m?'in the mountains':'over water')+' — all aboard lost','alert',u.x,u.y);u.cargo=[];}else unloadAt(u,.5);}}
+  else{const wl=inLake(u.x,u.y,0);if(wl||inRiver(u.x,u.y,0)){note(u.team,'An Albatross went down '+(wl&&wl.m?'in the mountains':'over water')+' — all aboard lost','alert',u.x,u.y,'trlost');u.cargo=[];}else unloadAt(u,.5);}}
  if(G.cp)campDead();G.units=G.units.filter(u=>u.hp>0&&!u.out);G.blds=G.blds.filter(b=>b.hp>0);G.sel=G.sel.filter(u=>u.hp>0&&!u.out);if(G.selB&&G.selB.hp<=0)G.selB=null;
  G.fogT-=dt;if(G.fogT<=0){G.fogT=.2;updFog();}
  if(!G.over&&!G.cp){const alive=[],al=[];for(const b of G.blds){alive[G.side[b.team]]=true;al[b.team]=1;}const live=[];for(let i=0;i<alive.length;i++)if(alive[i])live.push(i);if(live.length<=1)endGame(live.length?live[0]:-1);else if(G.skm&&!alive[G.side[ME]])endGame(live[0]);
@@ -4137,22 +4143,22 @@ function exec(T,c){if(!G||G.over||!c||typeof c!=='object')return;const ids=Array
   if(m==='strike'){callStrike(T,x,y,false);break;}
   if(m==='sat'){P.cd.sat=200;callStrike(T,x,y,true,{e:1});break;}
   if(SW[m]){P.cd[m]=SW[m].cd;fireSW(T,m,x,y);break;}
-  if(m==='scan'){P.cd.scan=110;G.reveals.push({x:W/2,y:H/2,r:Math.hypot(W,H),t:12,tm:T});if(T===ME)updFog();note(T,'Satellite Scan: map revealed for 12s','done');break;}
+  if(m==='scan'){P.cd.scan=110;G.reveals.push({x:W/2,y:H/2,r:Math.hypot(W,H),t:12,tm:T});if(T===ME)updFog();note(T,'Satellite Scan: map revealed for 12s','scanfx',null,null,'scanok');break;}
   if(m==='cmd'){const C=cmdOf(T);P.cd.cmd=C.ab.cd;
-   if(C.k==='armor'){for(const u of G.units)if(u.team===T&&u.hp>0&&UD[u.type].veh&&!u.air){u.hp=Math.min(u.max,u.hp+u.max*.5);fxAdd({k:'mk',x:u.x,y:u.y,t:.7,T:.7,c:'#7dffb0',r:u.r+8});}note(T,'Field Refit: vehicles patched up','done');}
+   if(C.k==='armor'){for(const u of G.units)if(u.team===T&&u.hp>0&&UD[u.type].veh&&!u.air){u.hp=Math.min(u.max,u.hp+u.max*.5);fxAdd({k:'mk',x:u.x,y:u.y,t:.7,T:.7,c:'#7dffb0',r:u.r+8});}note(T,'Field Refit: vehicles patched up','repairfx',null,null,'refit');}
    else if(C.k==='inf'){let h=G.blds.find(b=>b.team===T&&b.type==='hq')||G.blds.find(b=>b.team===T);if(!h&&G.cp){const q=G.units.find(u=>u.team===T&&u.hp>0&&!u.air&&!u.sea);if(q)h={x:q.x,y:q.y,dx:0,dy:1,r:0,rally:{x:q.x,y:q.y+60}};}if(h)['troop','troop','troop','troop','troop','lancer','lancer'].forEach((ty,j)=>{const u=spawn(T,ty,clamp(h.x+h.dx*(h.r+30)+(j%4-1.5)*22,10,W-10),clamp(h.y+h.dy*(h.r+30)+(j/4|0)*22,10,H-10));u.mv={x:h.rally.x+rnd(-30,30),y:h.rally.y+rnd(-30,30)};});note(T,h&&h.k==='b'?'Reserves have reported to your Hub':'Reserves have joined your force','done',null,null,'reinf');}
    else if(C.k==='air')callStrike(T,x,y,false,{n:8});
    else if(C.k==='sea')callStrike(T,x,y,false,{n:seaOn()?10:6,mul:1.2,msg:'Incoming naval shells!'});
    else if(C.k==='eco'){G.money[T]+=600;note(T,'Black Market: ◆600 delivered','cash');}
-   else if(C.k==='def'){for(const b of G.blds)if(b.team===T&&b.hp>0){if(b.built)b.hp=Math.min(b.max,b.hp+b.max*.3);b.shT=G.t+15;fxAdd({k:'mk',x:b.x,y:b.y,t:.9,T:.9,c:'#7df0ff',r:b.r+10});}note(T,'Fortify: base shielded for 15s','done');}
-   else if(C.k==='raid'){P.odT=Math.max(P.odT,12);note(T,'Blitz! Your forces surge for 12 seconds','done');}
+   else if(C.k==='def'){for(const b of G.blds)if(b.team===T&&b.hp>0){if(b.built)b.hp=Math.min(b.max,b.hp+b.max*.3);b.shT=G.t+15;fxAdd({k:'mk',x:b.x,y:b.y,t:.9,T:.9,c:'#7df0ff',r:b.r+10});}note(T,'Fortify: base shielded for 15s','shieldfx',null,null,'shieldup');}
+   else if(C.k==='raid'){P.odT=Math.max(P.odT,12);note(T,'Blitz! Your forces surge for 12 seconds','surgefx');}
    break;}
   const L=lv(T,m),i=clamp(L-1,0,2);P.cd[m]=AB[m].cd[i];
   if(m==='mark'){const rr2=[150,190,230][i],du=[12,14,16][i],mu=[1.25,1.35,1.5][i];let n=0;for(const e of G.units.concat(G.blds)){if(!foe(e.team,T)||e.team==='n'||e.hp<=0||gap({x,y},e)>rr2)continue;e.mkT=G.t+du;e.mkM=mu;n++;}fxAdd({k:'mk',x,y,t:1,T:1,c:'#ff5a3c',r:rr2});note(T,n?'Target Mark: '+n+' enem'+(n>1?'ies':'y')+' marked':'Target Mark found nothing there','done');}
-  else if(m==='guard'){const rr2=[170,210,250][i],du=[8,11,14][i];for(const e of G.units){if(foe(e.team,T)||e.team==='n'||e.hp<=0||gap({x,y},e)>rr2)continue;e.shT=Math.max(e.shT||0,G.t+du);}fxAdd({k:'mk',x,y,t:1,T:1,c:'#7df0ff',r:rr2});note(T,'Guardian Field up for '+du+' seconds','done');}
+  else if(m==='guard'){const rr2=[170,210,250][i],du=[8,11,14][i];for(const e of G.units){if(foe(e.team,T)||e.team==='n'||e.hp<=0||gap({x,y},e)>rr2)continue;e.shT=Math.max(e.shT||0,G.t+du);}fxAdd({k:'mk',x,y,t:1,T:1,c:'#7df0ff',r:rr2});note(T,'Guardian Field up for '+du+' seconds','shieldfx',null,null,'shieldup');}
   else if(m==='wind'){const f=[.5,.25,0][i];for(const k in P.cd)if(k!=='wind'&&k!=='sat'&&k!=='scan'&&P.cd[k]>0)P.cd[k]*=f;note(T,'Second Wind: abilities '+(f?'recharging faster':'ready again'),'done');}
-  else if(m==='overdrive'){P.odT=[15,20,25][i];note(T,'Overdrive! Your forces surge for '+P.odT+' seconds','done');}
-  else if(m==='supply'){const v=[400,700,1000][i];G.money[T]+=v;note(T,'Supply Drop: ◆'+v+' delivered','cash');}
+  else if(m==='overdrive'){P.odT=[15,20,25][i];note(T,'Overdrive! Your forces surge for '+P.odT+' seconds','surgefx',null,null,'surge');}
+  else if(m==='supply'){const v=[400,700,1000][i];G.money[T]+=v;note(T,'Supply Drop: ◆'+v+' delivered','cratefx',null,null,'supply');}
   else if(m==='surge'){P.surgeT=30;note(T,'Crystal Surge: harvesters deliver '+[1.5,2,2.5][i]+'× for 30 seconds','done');}
   else if(m==='recon'){G.reveals.push({x,y,r:[340,420,500][i],t:[15,20,25][i],tm:T});if(T===ME)updFog();note(T,'','done');}
   else if(m==='barrage')callStrike(T,x,y,false,{n:[6,9,12][i]});
@@ -5457,7 +5463,7 @@ function clientTick(dt){const N=NET,k=Math.min(1,dt*10),pn=performance.now();G.t
  for(const q of G.shots){const dx=q.tx-q.x,dy=q.ty-q.y,l=Math.hypot(dx,dy),st=q.sp*dt;if(l<=st)q.done=true;else{if(q.z!=null&&q.tz!=null)q.z+=(q.tz-q.z)*st/l;q.x+=dx/l*st;q.y+=dy/l*st;}}G.shots=G.shots.filter(q=>!q.done);
  for(const f of G.fx)f.t-=dt;G.fx=G.fx.filter(f=>f.t>0);for(const q of G.pings)q.t-=dt;G.pings=G.pings.filter(q=>q.t>0);for(const q of G.strikes)q.t-=dt;for(const e of G.sw){const t0=e.t;e.t+=dt;swAdv(e,t0,e.t);}
  if(!(NET&&NET.role==='client'))for(const u of G.units.slice())if(u.hp<=0&&u.cargo&&u.cargo.length){if(u.sea){const L=landing(u);if(L){note(u.team,'A '+UD[u.type].n+' was sunk inshore — those aboard got to the beach','alert',u.x,u.y);unloadAt(u,.5,L);}else{note(u.team,'A '+UD[u.type].n+' was sunk — all aboard lost','alert',u.x,u.y);u.cargo=[];}}
-  else{const wl=inLake(u.x,u.y,0);if(wl||inRiver(u.x,u.y,0)){note(u.team,'An Albatross went down '+(wl&&wl.m?'in the mountains':'over water')+' — all aboard lost','alert',u.x,u.y);u.cargo=[];}else unloadAt(u,.5);}}
+  else{const wl=inLake(u.x,u.y,0);if(wl||inRiver(u.x,u.y,0)){note(u.team,'An Albatross went down '+(wl&&wl.m?'in the mountains':'over water')+' — all aboard lost','alert',u.x,u.y,'trlost');u.cargo=[];}else unloadAt(u,.5);}}
  G.units=G.units.filter(u=>u.hp>0&&!u.out);G.blds=G.blds.filter(b=>b.hp>0);G.sel=G.sel.filter(u=>u.hp>0&&!u.out);if(G.selB&&G.selB.hp<=0)G.selB=null;
  G.fogT-=dt;if(G.fogT<=0){G.fogT=.2;updFog();}
  N.aF+=dt;N.aH+=dt;N.aV=(N.aV||0)+dt;
